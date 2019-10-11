@@ -1,4 +1,10 @@
 import React from 'react';
+import Login from './pages/login';
+import Private from './pages/private';
+import Profile from './pages/profile';
+import GroupShare from './pages/group_share';
+import ShareLocation from './pages/share_location';
+import History from './pages/history';
 
 export const routerPublic = [
     {
@@ -27,8 +33,8 @@ export const routerPrivate = [
         page:() => (<ShareLocation/>)
     },
     {
-        path:"/share_group",
-        page:() => (<ShareGroup/>)
+        path:"/group_share",
+        page:() => (<GroupShare/>)
     },
     {
         path:"/history",
