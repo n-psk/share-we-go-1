@@ -25,6 +25,10 @@ export const routerPrivate = [
         page:() => (<Private/>)
     },
     {
+        path:"/private",
+        page:() => (<Private/>)
+    },
+    {
         path:"/profile",
         page:() => (<Profile/>)
     },

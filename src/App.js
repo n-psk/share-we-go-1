@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import firebase from 'firebase';
 import {routerPublic,routerPrivate} from './router';
-import Loading from './pages/loading'
+import Loading from './pages/loading';
+import firebase from './connect/firebase';
 import './App.css';
 
 class App extends Component {
@@ -26,37 +26,37 @@ class App extends Component {
 
           this.setState({ auth: true })
 
-          if (navigator.geolocation) {
-              navigator.geolocation.watchPosition(function (position) {
-                  var data = {
-                      displayName: user.displayName,
-                      email: user.email,
-                      isAnonymous: user.isAnonymous,
-                      metadata: user.metadata,
-                      phoneNumber: user.phoneNumber,
-                      photoURL: user.photoURL,
-                      providerData: user.providerData,
-                      ra: user.ra,
-                      refreshToken: user.refreshToken,
-                      u: user.u,
-                      uid: user.uid,
-                      _lat: user._lat,
-                      coords: {
-                          accuracy: position.coords.accuracy,
-                          altitude: position.coords.altitude,
-                          altitudeAccuracy: position.coords.altitudeAccuracy,
-                          heading: position.coords.heading,
-                          latitude: position.coords.latitude,
-                          longitude: position.coords.longitude,
-                          speed: position.coords.speed
-                      }
-                  };
+          // if (navigator.geolocation) {
+          //     navigator.geolocation.watchPosition(function (position) {
+          //         var data = {
+          //             displayName: user.displayName,
+          //             email: user.email,
+          //             isAnonymous: user.isAnonymous,
+          //             metadata: user.metadata,
+          //             phoneNumber: user.phoneNumber,
+          //             photoURL: user.photoURL,
+          //             providerData: user.providerData,
+          //             ra: user.ra,
+          //             refreshToken: user.refreshToken,
+          //             u: user.u,
+          //             uid: user.uid,
+          //             _lat: user._lat,
+          //             coords: {
+          //                 accuracy: position.coords.accuracy,
+          //                 altitude: position.coords.altitude,
+          //                 altitudeAccuracy: position.coords.altitudeAccuracy,
+          //                 heading: position.coords.heading,
+          //                 latitude: position.coords.latitude,
+          //                 longitude: position.coords.longitude,
+          //                 speed: position.coords.speed
+          //             }
+          //         };
 
 
-              }, function () {
+              // }, function () {
                   // handleLocationError(true, infoWindow, map.getCenter());
-              });
-          }
+              // });
+          // }
       }
 
   });
