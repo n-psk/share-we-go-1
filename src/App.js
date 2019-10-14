@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import {routerPublic,routerPrivate} from './router';
+import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import firebase from './connect/firebase';
+import { setUser, setGEOLocation } from './RESTful_API'
 import './App.css';
+
 
 class App extends Component {
   state = {
@@ -19,47 +21,23 @@ class App extends Component {
     // กำหนดเวลาโชว์การเปิดตัว
     setTimeout(() => {
       this.setState({ redirectToReferrer: false })
-  }, 3000)
+    }, 3000)
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        setUser(user.uid, user)
+        this.setState({ auth: true })
 
-          this.setState({ auth: true })
-
-          // if (navigator.geolocation) {
-          //     navigator.geolocation.watchPosition(function (position) {
-          //         var data = {
-          //             displayName: user.displayName,
-          //             email: user.email,
-          //             isAnonymous: user.isAnonymous,
-          //             metadata: user.metadata,
-          //             phoneNumber: user.phoneNumber,
-          //             photoURL: user.photoURL,
-          //             providerData: user.providerData,
-          //             ra: user.ra,
-          //             refreshToken: user.refreshToken,
-          //             u: user.u,
-          //             uid: user.uid,
-          //             _lat: user._lat,
-          //             coords: {
-          //                 accuracy: position.coords.accuracy,
-          //                 altitude: position.coords.altitude,
-          //                 altitudeAccuracy: position.coords.altitudeAccuracy,
-          //                 heading: position.coords.heading,
-          //                 latitude: position.coords.latitude,
-          //                 longitude: position.coords.longitude,
-          //                 speed: position.coords.speed
-          //             }
-          //         };
-
-
-              // }, function () {
-                  // handleLocationError(true, infoWindow, map.getCenter());
-              // });
-          // }
+        if (navigator.geolocation) {
+          navigator.geolocation.watchPosition(function (position) {
+            setGEOLocation(user.uid, position)
+          }, function () {
+            // handleLocationError(true, infoWindow, map.getCenter());
+          });
+        }
       }
 
-  });
+    });
 
 
 
@@ -72,31 +50,31 @@ class App extends Component {
     return (
       <React.Fragment>
         <Router>
-        {redirectToReferrer == true
-          ? (<React.Fragment><Loading/></React.Fragment>)
-          : (<React.Fragment>
-            {auth === false
-              ? (<React.Fragment>{
-                routerPublic.map((route, index) => (
+          {redirectToReferrer == true
+            ? (<React.Fragment><Loading /></React.Fragment>)
+            : (<React.Fragment>
+              {auth === false
+                ? (<React.Fragment>{
+                  routerPublic.map((route, index) => (
+                    <Route
+                      key={index}
+                      path={route.path}
+                      exact={route.exact}
+                      component={route.page}
+                    />
+                  ))
+                }</React.Fragment>)
+                : (<React.Fragment>{routerPrivate.map((route, index) => (
                   <Route
-                  key={index}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.page}
-                />
-                ))
-              }</React.Fragment>)
-              : (<React.Fragment>{routerPrivate.map((route, index) => (
-                <Route
-                key={index}
-                path={route.path}
-                exact={route.exact}
-                component={route.page}
-              />
-              ))}</React.Fragment>)
-            }
-          </React.Fragment>)
-        }
+                    key={index}
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.page}
+                  />
+                ))}</React.Fragment>)
+              }
+            </React.Fragment>)
+          }
         </Router>
       </React.Fragment>
     )
