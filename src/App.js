@@ -26,11 +26,14 @@ class App extends Component {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setUser(user.uid, user)
+        // console.log(user);
+        
         this.setState({ auth: true })
 
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function (position) {
             setGEOLocation(user.uid, position)
+            console.log(position);
           }, function () {
             // handleLocationError(true, infoWindow, map.getCenter());
           });
