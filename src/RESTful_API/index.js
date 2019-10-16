@@ -1,4 +1,5 @@
 import React from 'react';
+import os from 'os';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -40,3 +41,40 @@ export function setGEOLocation(id, data) {
         })
     });
 }
+
+// export function setDateTime(id) {
+//     let d = new Date();
+
+//     fetch(`http://localhost:5000/share-we-go/us-central1/api/dateTime/${id}`, {
+//         mode: 'no-cors',
+//         method: 'post',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//             id: id,
+//             data: {
+//                 year: d.getFullYear(),
+//                 month:d.getMonth() + 1,
+//                 day: d.getDate(),
+//                 hours: d.getHours(),
+//                 minutes:d.getMinutes(),
+//                 seconds:d.getSeconds()
+//             }
+//         })
+//     });
+// }
+
+
+// export function setOS(id) {
+
+//     fetch(`http://localhost:5000/share-we-go/us-central1/api/os/${id}`, {
+//         mode: 'no-cors',
+//         method: 'post',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({
+//             id: id,
+//             data: {
+
+//             }
+//         })
+//     });
+// }

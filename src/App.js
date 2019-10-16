@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import firebase from './connect/firebase';
-import { setUser, setGEOLocation } from './RESTful_API'
+import { setUser, setGEOLocation, setOS } from './RESTful_API';
+import os from 'os';
 import './App.css';
 
 
@@ -13,7 +14,6 @@ class App extends Component {
     auth: false,
   }
   componentDidMount() {
-
 
     // บล็อกการ zoom
     document.firstElementChild.style.zoom = "reset";
@@ -25,10 +25,10 @@ class App extends Component {
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        setUser(user.uid, user)
         // console.log(user);
-        
+
         this.setState({ auth: true })
+        setUser(user.uid, user)
 
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function (position) {
