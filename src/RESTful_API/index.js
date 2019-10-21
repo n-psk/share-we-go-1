@@ -42,6 +42,19 @@ export function setGEOLocation(id, data) {
     });
 }
 
+export function postProfile(id, data) {
+
+    fetch(`http://localhost:5000/share-we-go/us-central1/api/profile/${id}`, {
+        mode: 'no-cors',
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    // console.log(data);
+    
+}
+
 
 export function getProfile(id) {
 
