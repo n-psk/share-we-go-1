@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import firebase from './connect/firebase';
-import { setUser, setGEOLocation, setOS } from './RESTful_API';
+import { setUser, setGEOLocation } from './RESTful_API';
 import os from 'os';
 import './App.css';
 
