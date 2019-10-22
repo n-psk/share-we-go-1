@@ -52,15 +52,15 @@ export function postProfile(id, data) {
     });
 
     // console.log(data);
-    
+
 }
 
 
 export function getProfile(id) {
 
-   return fetch(`http://localhost:5000/share-we-go/us-central1/api/profile/${id}`).then(
-        function(res) {
-           return res.json();
+    return fetch(`http://localhost:5000/share-we-go/us-central1/api/profile/${id}`).then(
+        function (res) {
+            return res.json();
         }
     )
 }
@@ -68,11 +68,50 @@ export function getProfile(id) {
 export function getGEOLocation(id) {
 
     return fetch(`http://localhost:5000/share-we-go/us-central1/api/geolocation/${id}`).then(
-         function(res) {
+        function (res) {
             return res.json();
-         }
-     )
- }
+        }
+    )
+}
+
+export function getStatusShare(id) {
+
+    return fetch(`http://localhost:5000/share-we-go/us-central1/api/status_share/${id}`).then(
+        function (res) {
+            return res.json();
+        }
+    )
+}
+
+export function postStatusShare(id, data) {
+
+    fetch(`http://localhost:5000/share-we-go/us-central1/api/status_share/${id}`, {
+        mode: 'no-cors',
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+}
+
+export function postBaseShareLocation(id, data) {
+
+    fetch(`http://localhost:5000/share-we-go/us-central1/api/base_share_location/${id}`, {
+        mode: 'no-cors',
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+}
+
+export function getShareLocationPrivate(id) {
+
+    return fetch(`http://localhost:5000/share-we-go/us-central1/api/share_location_private/${id}`).then(
+        function (res) {
+            return res.json();
+        }
+    )
+}
+
 
 
 

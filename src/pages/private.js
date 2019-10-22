@@ -1,6 +1,6 @@
 import React from 'react';
 import ConnectApiMaps, { Map } from 'maps-google-react';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import clsx from 'clsx';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Avatar from '@material-ui/core/Avatar';
@@ -11,9 +11,9 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Divider from '@material-ui/core/Divider';
-// import AddIcon from '@material-ui/icons/Add';
-// import GroupIcon from '@material-ui/icons/Group';
-// import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import GroupIcon from '@material-ui/icons/Group';
+import Fab from '@material-ui/core/Fab';
 import HistoryIcon from '@material-ui/icons/History';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import List from '@material-ui/core/List';
@@ -24,7 +24,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import SearchMap from '../components/SearchMap';
 import SearchBar from '../components/SearchBar';
 import firebase from '../connect/firebase'
-import { getProfile, getGEOLocation } from '../RESTful_API';
+import { getProfile, getGEOLocation, getStatusShare } from '../RESTful_API';
 import '../styles/map.css';
 import '../App.css';
 import '../styles/share-location-bar.css';
@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     appBarShift: {
         width: `calc(100% - ${drawerWidth}px)`,
         // marginLeft: drawerWidth,
-        backgroundColor:"rgba(0,0,0,0.4)",
+        backgroundColor: "rgba(0,0,0,0.4)",
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
@@ -105,6 +105,8 @@ const Private = function (props) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [profile, setProfile] = React.useState({});
+    const [statusShare, setStatusShare] = React.useState(false)
+
     const [map, setMap] = React.useState({});
 
     // กำหนดตัวแปล latlng
@@ -242,6 +244,10 @@ const Private = function (props) {
                                     map.setCenter(pos);
                                 })
                             })
+
+                            getStatusShare(user.uid).then(function (data) {
+                                setStatusShare(data.status)
+                            })
                         })
 
                     }}
@@ -249,6 +255,18 @@ const Private = function (props) {
                     <SearchBar >
                         <SearchMap onClick={handleDrawerOpen} map={map} {...props} />
                     </SearchBar>
+                    {statusShare === true
+                        ? (<Link to="/share_group" >
+                            <Fab color="primary" aria-label="add" className={classes.fab}>
+                                <GroupIcon />
+                            </Fab>
+                        </Link>)
+                        : (<Link to="/share_location" >
+                            <Fab color="primary" aria-label="add" className={classes.fab}>
+                                <AddIcon />
+                            </Fab>
+                        </Link>)
+                    }
                 </Map>
             </div>
             <Drawer
