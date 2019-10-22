@@ -19,13 +19,13 @@ import CustomDateTimePicker from '../components/CustomDateTimePicker';
 import TravelCompanion from '../components/TravelCompanion';
 // import geno from '../image/geno.svg'
 import Selectgender from '../components/Selectgender';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CommuteIcon from '@material-ui/icons/Commute';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
 import firebase from '../connect/firebase';
-import { getShareLocationPrivate } from '../RESTful_API';
+import { getShareLocationPrivate, postStatusShare } from '../RESTful_API';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -133,6 +133,7 @@ function ShareLocation(props) {
     const [completed, setCompleted] = useState(new Set());
     const [skipped, setSkipped] = useState(new Set());
     const [shareLocation, setShareLocation] = useState(new Set());
+    const [location, setLocation] = useState(new Set());
     const steps = getSteps();
 
     // console.log(Router);
@@ -204,10 +205,14 @@ function ShareLocation(props) {
         if (activeStep === 3) {
             firebase.auth().onAuthStateChanged((user) => {
                 if (user) {
-                    getShareLocationPrivate(user.uid).then(function(data) {
+                    getShareLocationPrivate(user.uid).then(function (data) {
                         setShareLocation(data)
+                        setLocation({
+                            start_address: data.routes[0].legs[0].start_address,
+                            end_address: data.routes[0].legs[0].end_address
+                        })
                         console.log(data);
-                        
+
                     })
                 }
             })
@@ -228,6 +233,9 @@ function ShareLocation(props) {
         setActiveStep(0);
         setCompleted(new Set());
         setSkipped(new Set());
+        firebase.auth().onAuthStateChanged((user) => {
+            postStatusShare(user.uid, true)
+        })
     }
 
     function isStepSkipped(step) {
@@ -309,17 +317,17 @@ function ShareLocation(props) {
                                     <div>
                                         <h2><CommuteIcon align></CommuteIcon> ต้นทาง - ปลายทาง</h2>
                                     </div>
-                                    {/* <b>ต้นทาง:</b> {routes.start_address}
+                                    <b>ต้นทาง:</b> {location.start_address}
                                     <br />
-                                    <b>ปลายทาง:</b> {routes.end_address}
+                                    <b>ปลายทาง:</b> {location.end_address}
                                     <br />
                                     <h2><RecentActorsIcon></RecentActorsIcon> ข้อมูลการแชร์</h2>
-                                    <b>เริ่มการแชร์:</b> {boardingTime.start_time}
+                                    <b>เริ่มการแชร์:</b> {shareLocation.start_time}
                                     <br />
-                                    <b>ปิดการแชร์:</b> {boardingTime.end_time}
+                                    <b>ปิดการแชร์:</b> {shareLocation.end_time}
                                     <br />
-                                    <b>ต้องการผู้ร่วมเดินทางเพิ่ม:</b> {numberOfTravel} คน
-                                    <b>ต้องการร่วมเดินทางกับเพศ: {gender}</b> */}
+                                    <b>ต้องการผู้ร่วมเดินทางเพิ่ม:</b> {shareLocation.number_of_travel} คน
+                                    <b>ต้องการร่วมเดินทางกับเพศ: {shareLocation.sex}</b>
                                     <hr border="5" shadow="5" />
                                 </div>
                             </center>
@@ -332,7 +340,7 @@ function ShareLocation(props) {
                         }}>
                             <center >
                                 <Link to="/share_group">
-                                    <Button variant="contained" color="primary" onClick={handleReset}>ปิด</Button>
+                                    <Button variant="contained" color="primary" onClick={handleReset}>เปิดแชร์</Button>
                                 </Link>
                             </center>
                         </div>

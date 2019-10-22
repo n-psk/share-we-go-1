@@ -121,6 +121,9 @@ function PlaceAutocompleteAndDirections(props) {
                     firebase.auth().onAuthStateChanged((user) => {
                         postBaseShareLocation(user.uid, response)
                     })
+
+                    console.log(response);
+                    
                 } else {
                     //     alert('Directions request failed due to ' + status);
                     // console.log(response, status);

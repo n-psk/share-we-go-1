@@ -89,7 +89,7 @@ export function postStatusShare(id, data) {
         mode: 'no-cors',
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({status_share: data})
     });
 }
 
