@@ -32,7 +32,7 @@ import Fade from '@material-ui/core/Fade';
 import SearchMap from './components/SearchMap';
 import SearchBar from './components/SearchBar';
 import firebase from '../../connect/firebase'
-import { getProfile, getGEOLocation, getStatusShare } from '../../RESTful_API';
+import { get } from '../../RESTful_API';
 import taxiIcon from './img/icon-taxi.png'
 import './styles/map.css';
 import './styles/index.css';
@@ -168,12 +168,13 @@ const Private = function (props) {
     const [open, setOpen] = React.useState(false);
     const [openChat, setOpenChat] = React.useState(false);
     const [profile, setProfile] = React.useState({});
-    const [statusShare, setStatusShare] = React.useState(true)
+    const [statusShare, setStatusShare] = React.useState(false)
     const [owner, setOwner] = React.useState(true)
     const [visibility, setVisibility] = React.useState(true)
     const [openCallTaxi, setOpenCallTaxi] = React.useState(false);
     const [openTaxiDoc, setOpenTaxiDoc] = React.useState(false);
     const [statusDocTaxi, setStatusDocTaxi] = React.useState(false);
+    const [uid, setUid] = React.useState('')
 
 
     const [map, setMap] = React.useState({});
@@ -200,9 +201,11 @@ const Private = function (props) {
     function handleDrawerOpen() {
         setOpen(true);
         firebase.auth().onAuthStateChanged((user) => {
-            getProfile(user.uid).then(function (data) {
+            get.users.profile(user.uid).then(function (data) {
                 setProfile(data)
             })
+
+            setUid(user.uid)
         })
     }
 
@@ -327,8 +330,8 @@ const Private = function (props) {
 
                         firebase.auth().onAuthStateChanged((user) => {
 
-                            getProfile(user.uid).then(function (prof) {
-                                getGEOLocation(user.uid).then(function (geo) {
+                            get.users.profile(user.uid).then(function (prof) {
+                                get.users.location(user.uid).then(function (geo) {
                                     var myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
 
                                     var marker1 = new CustomMarker(
@@ -350,9 +353,9 @@ const Private = function (props) {
                                 })
                             })
 
-                            getStatusShare(user.uid).then(function (data) {
+                            // getStatusShare(user.uid).then(function (data) {
                                 // setStatusShare(data.status)
-                            })
+                            // })
                         })
 
                     }}
@@ -650,7 +653,7 @@ const Private = function (props) {
                 <List style={{
                     marginTop: '15px'
                 }}>
-                    <Link to="/profile" style={{
+                    <Link to={`/profile/${uid}`} style={{
                         color: 'dimgray',
                         textDecoration: 'blink'
                     }}>

@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import firebase from './connect/firebase';
-import { setUser, setGEOLocation } from './RESTful_API';
-import os from 'os';
+import { post } from './RESTful_API';
+import { dateTime } from './module';
 import './App.css';
 
 
@@ -24,15 +24,17 @@ class App extends Component {
     }, 3000)
 
     firebase.auth().onAuthStateChanged((user) => {
+
+
       if (user) {
         // console.log(user);
 
         this.setState({ auth: true })
-        setUser(user.uid, user)
+        post.users.user(user.uid, user, dateTime)
 
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function (position) {
-            setGEOLocation(user.uid, position)
+            post.users.location(user.uid, position, dateTime)
             console.log(position);
           }, function () {
             // handleLocationError(true, infoWindow, map.getCenter());

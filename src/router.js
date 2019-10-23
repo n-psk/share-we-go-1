@@ -8,40 +8,42 @@ import History from './pages/history';
 
 export const routerPublic = [
     {
-        path:"/",
+        path: "/",
         exact: true,
-        page:() => (<Login/>)
+        page: () => (<Login />)
     },
     {
-        path:"/login",
-        page:() => (<Login/>)
+        path: "/login",
+        page: () => (<Login />)
     }
 ];
 
 export const routerPrivate = [
     {
-        path:"/",
+        path: "/",
         exact: true,
-        page:() => (<Private/>)
+        page: () => (<Private />)
     },
     {
-        path:"/private",
-        page:() => (<Private/>)
+        path: "/private",
+        page: () => (<Private />)
     },
     {
-        path:"/profile",
-        page:() => (<Profile/>)
+        path: "/profile/:id",
+        page: ({ match }) => {
+            return (<Profile match={{...match}} />)
+        }
     },
     {
-        path:"/share_location",
-        page:() => (<ShareLocation/>)
+        path: "/share_location",
+        page: () => (<ShareLocation />)
     },
     {
-        path:"/doc_taxi",
-        page:() => (<DocTaxi/>)
+        path: "/doc_taxi",
+        page: () => (<DocTaxi />)
     },
     {
-        path:"/history",
-        page:() => (<History/>)
+        path: "/history",
+        page: () => (<History />)
     }
 ]
