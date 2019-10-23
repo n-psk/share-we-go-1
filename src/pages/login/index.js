@@ -1,8 +1,8 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase from '../connect/firebase';
-import ContainerUI from '../components/ContainerUI';
+import firebase from '../../connect/firebase';
+import ContainerUI from '../../components/ContainerUI';
 
 
 

@@ -173,6 +173,7 @@ const Private = function (props) {
     const [visibility, setVisibility] = React.useState(true)
     const [openCallTaxi, setOpenCallTaxi] = React.useState(false);
     const [openTaxiDoc, setOpenTaxiDoc] = React.useState(false);
+    const [statusDocTaxi, setStatusDocTaxi] = React.useState(false);
 
 
     const [map, setMap] = React.useState({});
@@ -405,31 +406,8 @@ const Private = function (props) {
                                             }}
                                         />
                                     </Grid>
-                                    <Grid container style={{
-                                        width: 'min-content',
-                                        position: 'absolute',
-                                        left: '15px',
-                                        bottom: '80px',
 
-                                    }} >
-                                        <Fab size="medium" onClick={exitShare} aria-label="exit-share" className={classes.buttonExitShare}>
-                                            <MeetingRoomIcon />
-                                        </Fab>
-                                    </Grid>
-                                    <Grid container style={{
-                                        width: 'min-content',
-                                        position: 'absolute',
-                                        right: '15px',
-                                        bottom: '80px',
 
-                                    }} >
-                                        <Fab size="medium" onClick={handleOpenCallTaxi} aria-label="add" className={classes.buttonTaxi}>
-                                            <LocalTaxiIcon />
-                                        </Fab>
-                                        <Fab size="medium" onClick={handleDrawerOpenChat} color="secondary" aria-label="add" className={classes.buttonChat}>
-                                            <QuestionAnswerIcon />
-                                        </Fab>
-                                    </Grid>
                                     <Modal
                                         aria-labelledby="transition-modal-title"
                                         aria-describedby="transition-modal-description"
@@ -465,11 +443,59 @@ const Private = function (props) {
                                             </div>
                                         </Fade>
                                     </Modal>
-                                    <Link to="/share_group" >
-                                        <Button variant="contained" style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
-                                            เริ่มเดินทาง
+                                    {statusDocTaxi === true
+                                        ? (
+                                            <React.Fragment>
+                                                <Grid container style={{
+                                                    width: 'min-content',
+                                                    position: 'absolute',
+                                                    right: '15px',
+                                                    bottom: '80px',
+
+                                                }} >
+                                                    <Fab size="medium" onClick={handleDrawerOpenChat} color="secondary" aria-label="add" className={classes.buttonChat}>
+                                                        <QuestionAnswerIcon />
+                                                    </Fab>
+                                                </Grid>
+                                                <Button variant="contained" onClick={exitShare} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
+                                                    เสร็จสิ้นการเดินทาง
                                         </Button>
-                                    </Link>
+                                            </React.Fragment>)
+                                        : (
+                                            <React.Fragment>
+                                                <Grid container style={{
+                                                    width: 'min-content',
+                                                    position: 'absolute',
+                                                    right: '15px',
+                                                    bottom: '80px',
+
+                                                }} >
+                                                    <Fab size="medium" onClick={handleOpenCallTaxi} aria-label="add" className={classes.buttonTaxi}>
+                                                        <LocalTaxiIcon />
+                                                    </Fab>
+                                                    <Fab size="medium" onClick={handleDrawerOpenChat} color="secondary" aria-label="add" className={classes.buttonChat}>
+                                                        <QuestionAnswerIcon />
+                                                    </Fab>
+                                                </Grid>
+                                                <Grid container style={{
+                                                    width: 'min-content',
+                                                    position: 'absolute',
+                                                    left: '15px',
+                                                    bottom: '80px',
+
+                                                }} >
+                                                    <Fab size="medium" onClick={exitShare} aria-label="exit-share" className={classes.buttonExitShare}>
+                                                        <MeetingRoomIcon />
+                                                    </Fab>
+                                                </Grid>
+                                                <Link to="/doc_taxi" >
+                                                    <Button variant="contained" style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
+                                                        เริ่มเดินทาง
+                                            </Button>
+                                                </Link>
+                                            </React.Fragment>
+                                        )
+                                    }
                                 </React.Fragment>)
                                 : (<React.Fragment>
                                     <Grid container style={{
@@ -569,7 +595,7 @@ const Private = function (props) {
                 }}
             >
                 <ChatBar>
-                    <IconButton onClick={handleDrawerCloseChat} style={{ position: "absolute" }}>
+                    <IconButton onClick={handleDrawerCloseChat} style={{ position: "absolute", left: 0 }}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon fontSize="large" /> : <ChevronRightIcon fontSize="large" />}
                     </IconButton>
                     <div style={{
