@@ -13,19 +13,19 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types'
 import { createMuiTheme } from '@material-ui/core/styles';
-import ShareLocationBar from '../components/ShareLocationBar';
-import PlaceAutocompleteAndDirections from '../components/PlaceAutocompleteAndDirections';
-import CustomDateTimePicker from '../components/CustomDateTimePicker';
-import TravelCompanion from '../components/TravelCompanion';
+import ShareLocationBar from './components/ShareLocationBar';
+import PlaceAutocompleteAndDirections from './components/PlaceAutocompleteAndDirections';
+import CustomDateTimePicker from './components/CustomDateTimePicker';
+import TravelCompanion from './components/TravelCompanion';
 // import geno from '../image/geno.svg'
-import Selectgender from '../components/Selectgender';
+import Selectgender from './components/Selectgender';
 import { Link } from 'react-router-dom';
 import CommuteIcon from '@material-ui/icons/Commute';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
-import firebase from '../connect/firebase';
-import { getShareLocationPrivate, postStatusShare } from '../RESTful_API';
+import firebase from '../../connect/firebase';
+import { getShareLocationPrivate, postStatusShare } from '../../RESTful_API';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -108,6 +108,7 @@ function getStepContent(stepIndex) {
 const useStyles = makeStyles(theme => ({
     root: {
         width: '-webkit-fill-available',
+        overflow: 'hidden'
         // padding: '30px 0px 10px 0px'
     },
     button: {
@@ -122,6 +123,14 @@ const useStyles = makeStyles(theme => ({
     instructions: {
         // marginTop: theme.spacing(1),
         // marginBottom: theme.spacing(1),
+    },
+    nextStaps: {
+        height: '45px',
+        bottom: '15px',
+        width: '-webkit-fill-available',
+        position: 'absolute',
+        marginLeft: '22px',
+        marginRight: '22px',
     },
 }));
 
@@ -327,6 +336,7 @@ function ShareLocation(props) {
                                     <b>ปิดการแชร์:</b> {shareLocation.end_time}
                                     <br />
                                     <b>ต้องการผู้ร่วมเดินทางเพิ่ม:</b> {shareLocation.number_of_travel} คน
+                                    <br />
                                     <b>ต้องการร่วมเดินทางกับเพศ: {shareLocation.sex}</b>
                                     <hr border="5" shadow="5" />
                                 </div>
@@ -339,7 +349,7 @@ function ShareLocation(props) {
                             width: '-webkit-fill-available'
                         }}>
                             <center >
-                                <Link to="/share_group">
+                                <Link to="/">
                                     <Button variant="contained" color="primary" onClick={handleReset}>เปิดแชร์</Button>
                                 </Link>
                             </center>
@@ -352,12 +362,12 @@ function ShareLocation(props) {
                             <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
                             <div style={{
                                 position: 'fixed',
-                                bottom: '25px',
+                                bottom: '0px',
                                 width: '-webkit-fill-available'
                             }}>
-                                <center>
+                                {/* <center> */}
                                     {/* <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>Back</Button> */}
-                                    <Button
+                                    {/* <Button
                                         variant="contained"
                                         color="primary"
                                         onClick={handleNext}
@@ -370,17 +380,17 @@ function ShareLocation(props) {
                                             onClick={handleSkip}
                                             className={classes.button}
                                         >Skip</Button>
-                                    )}
+                                    )} */}
 
                                     {activeStep !== steps.length &&
                                         (completed.has(activeStep) ? (
                                             <Typography variant="caption" className={classes.completed}>Step {activeStep + 1} already completed</Typography>
                                         ) : (
-                                                <Button variant="contained" color="primary" onClick={handleComplete}>
-                                                    {completedSteps() === totalSteps() - 1 ? 'Finish' : 'Complete Step'}
+                                                <Button variant="contained" color="primary" className={classes.nextStaps} onClick={handleComplete}>
+                                                    {completedSteps() === totalSteps() - 1 ? 'เสร็จสิ้นขั้นตอน' : 'ขั้นตอนถัดไป'}
                                                 </Button>
                                             ))}
-                                </center>
+                                {/* </center> */}
                             </div>
                             {/* </ThemeProvider> */}
                         </div>

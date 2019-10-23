@@ -31,11 +31,10 @@ class ShareLocationBar extends React.Component {
                 flexDirection: 'column'
             }}>
                 {/* <ThemeProvider theme={share_location_bar_theme}> */}
-                    <AppBar color="inherit" position="static"
+                    <AppBar color="inherit" position="absolute"
                         elevation={1}
                     >
                         <Toolbar
-                        className={classes.gutters}
                         >
                             {this.props.children}
                         </Toolbar>

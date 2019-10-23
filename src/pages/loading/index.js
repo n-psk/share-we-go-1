@@ -1,8 +1,8 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import ContainerUI from '../components/ContainerUI';
-import CircularUnderLoad from '../components/CircularUnderLoad';
-// import Logo from '../svgs/icon.svg';
+import ContainerUI from '../../components/ContainerUI';
+import CircularUnderLoad from '../../components/CircularUnderLoad';
+import logo from './img/icon.svg';
 
 const Loading = () => {
     return (
@@ -17,12 +17,7 @@ const Loading = () => {
                     alignItems: 'center',
                     backgroundColor: '#274D7D',
                 }}>
-                    {/* <Logo style={{
-                        margin: 10,
-                        width: 200,
-                        height: 250,
-                    }} /> */}
-                   <img src="(ใส่รูป โลโก้)"
+                   <img src={logo}
                     style={{
                         margin: 10,
                         width: 200,

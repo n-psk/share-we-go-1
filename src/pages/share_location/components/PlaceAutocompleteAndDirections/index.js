@@ -1,8 +1,8 @@
 import React from 'react';
 import ConnectApiMaps, { Map } from 'maps-google-react';
-import { postBaseShareLocation } from '../RESTful_API';
-import firebase from '../connect/firebase'
-import '../styles/place-autocomplete-and-directions.css';
+import { postBaseShareLocation } from '../../../../RESTful_API';
+import firebase from '../../../../connect/firebase'
+import './styles/place-autocomplete-and-directions.css';
 
 
 function PlaceAutocompleteAndDirections(props) {
@@ -123,7 +123,7 @@ function PlaceAutocompleteAndDirections(props) {
                     })
 
                     console.log(response);
-                    
+
                 } else {
                     //     alert('Directions request failed due to ' + status);
                     // console.log(response, status);
@@ -152,9 +152,10 @@ function PlaceAutocompleteAndDirections(props) {
     return (
         <Map google={props.google}
             setStyle={{
+                marginTop: '100px',
                 position: "absolute",
                 overflow: "hidden",
-                height: "85%",
+                height: (window.innerHeight-100),
                 width: "100%",
             }}
             mapOptions={{
@@ -187,7 +188,12 @@ function PlaceAutocompleteAndDirections(props) {
                     className="controls"
                     type="text"
                     placeholder="ต้นทาง"
-                    style={{ zIndex: 0, position: 'relative', top: '50px', }}
+                    style={{
+                        zIndex: 0,
+                        position: 'relative',
+                        top: '50px',
+                        borderRadius: '8px',
+                    }}
                 />
                 <input
                     ref={destinationSearchInput}
@@ -196,9 +202,20 @@ function PlaceAutocompleteAndDirections(props) {
                     id="destination-input"
                     className="controls"
                     type="text"
-                    placeholder="ปลายทาง" />
+                    placeholder="ปลายทาง"
+                    style={{
+                        borderRadius: '8px',
+                    }}
+                     />
 
-                <div id="mode-selector" className="controls">
+                <div 
+                id="mode-selector" 
+                className="controls"
+                style={{
+                    borderRadius: '8px',
+                    marginRight: '10px'
+                }}
+                >
                     <input type="radio" name="type" id="changemode-walking" />
                     <label htmlFor="changemode-walking">Walking</label>
                     <br />

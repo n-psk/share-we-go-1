@@ -6,8 +6,8 @@ import DateFnsUtils from '@date-io/date-fns';
 // import SnoozeIcon from "@material-ui/icons/Snooze";
 // import AlarmIcon from "@material-ui/icons/AddAlarm";
 // import { IconButton, InputAdornment } from "@material-ui/core";
-import { postBaseShareLocation } from '../RESTful_API';
-import firebase from '../connect/firebase'
+import { postBaseShareLocation } from '../../../../RESTful_API';
+import firebase from '../../../../connect/firebase'
 import {
   MuiPickersUtilsProvider,
   KeyboardDateTimePicker
@@ -74,11 +74,14 @@ export default function CustomDateTimePicker() {
     // socket.emit('boarding_time', timer)
     firebase.auth().onAuthStateChanged((user) => {
       postBaseShareLocation(user.uid, timer)
-  })
+    })
   }
 
+  var h_max = window.innerHeight
+  var h = h_max/2
+
   return (
-    <div style={{ marginTop: '50%' }}>
+    <div style={{ marginTop: h }}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container justify="space-around">
           <ThemeProvider theme={materialTheme}>
