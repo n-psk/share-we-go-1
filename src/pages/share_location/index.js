@@ -25,7 +25,10 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
 import firebase from '../../connect/firebase';
-import { getShareLocationPrivate, postStatusShare } from '../../RESTful_API';
+import { post, get } from '../../RESTful_API';
+import { dateTime } from '../../module';
+import { setDate } from 'date-fns';
+
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -141,8 +144,11 @@ function ShareLocation(props) {
     const [activeStep, setActiveStep] = useState(0);
     const [completed, setCompleted] = useState(new Set());
     const [skipped, setSkipped] = useState(new Set());
-    const [shareLocation, setShareLocation] = useState(new Set());
     const [location, setLocation] = useState(new Set());
+    const [sex, setSex] = useState(new Set());
+    const [max_number, setMaxNumber] = useState(new Set());
+    const [date, setDate] = useState(new Set());
+
     const steps = getSteps();
 
     // console.log(Router);
@@ -214,15 +220,28 @@ function ShareLocation(props) {
         if (activeStep === 3) {
             firebase.auth().onAuthStateChanged((user) => {
                 if (user) {
-                    getShareLocationPrivate(user.uid).then(function (data) {
-                        setShareLocation(data)
+
+                    get.share.location(user.uid).then(function (data) {
                         setLocation({
                             start_address: data.routes[0].legs[0].start_address,
                             end_address: data.routes[0].legs[0].end_address
                         })
-                        console.log(data);
+                    });
 
-                    })
+                    get.share.date(user.uid).then(function (data) {
+                        setDate({
+                            end_time: data.end_time.value,
+                            start_time: data.start_time.value
+                        })
+                    });
+
+                    get.share.max_number(user.uid).then(function (data) {
+                        setMaxNumber({ value: data.value })
+                    });
+
+                    get.share.sex(user.uid).then(function (data) {
+                        setSex({ value: data.value })
+                    });
                 }
             })
         }
@@ -243,7 +262,16 @@ function ShareLocation(props) {
         setCompleted(new Set());
         setSkipped(new Set());
         firebase.auth().onAuthStateChanged((user) => {
-            postStatusShare(user.uid, true)
+            post.status.share(user.uid, { value: "true", uid: user.uid, id: user.uid }, dateTime)
+            post.status.owner(user.uid, { value: "true", uid: user.uid, share_id: user.uid }, dateTime)
+            post.status.member(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
+            post.status.alert(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
+            post.status.process(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
+
+            get.users.profile(user.uid).then(function (data) {
+
+                post.share.owner(user.uid, { id: user.uid, profile: data }, dateTime)
+            })
         })
     }
 
@@ -331,13 +359,13 @@ function ShareLocation(props) {
                                     <b>ปลายทาง:</b> {location.end_address}
                                     <br />
                                     <h2><RecentActorsIcon></RecentActorsIcon> ข้อมูลการแชร์</h2>
-                                    <b>เริ่มการแชร์:</b> {shareLocation.start_time}
+                                    <b>เริ่มการแชร์:</b> {date.start_time}
                                     <br />
-                                    <b>ปิดการแชร์:</b> {shareLocation.end_time}
+                                    <b>ปิดการแชร์:</b> {date.end_time}
                                     <br />
-                                    <b>ต้องการผู้ร่วมเดินทางเพิ่ม:</b> {shareLocation.number_of_travel} คน
+                                    <b>ต้องการผู้ร่วมเดินทางเพิ่ม:</b> {max_number.value} คน
                                     <br />
-                                    <b>ต้องการร่วมเดินทางกับเพศ: {shareLocation.sex}</b>
+                                    <b>ต้องการร่วมเดินทางกับเพศ: {sex.value}</b>
                                     <hr border="5" shadow="5" />
                                 </div>
                             </center>
@@ -350,7 +378,7 @@ function ShareLocation(props) {
                         }}>
                             <center >
                                 <Link to="/">
-                                    <Button variant="contained" color="primary" onClick={handleReset}>เปิดแชร์</Button>
+                                    <Button variant="contained" onClick={handleReset} color="primary" >เปิดแชร์</Button>
                                 </Link>
                             </center>
                         </div>
@@ -366,8 +394,8 @@ function ShareLocation(props) {
                                 width: '-webkit-fill-available'
                             }}>
                                 {/* <center> */}
-                                    {/* <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>Back</Button> */}
-                                    {/* <Button
+                                {/* <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>Back</Button> */}
+                                {/* <Button
                                         variant="contained"
                                         color="primary"
                                         onClick={handleNext}
@@ -382,14 +410,14 @@ function ShareLocation(props) {
                                         >Skip</Button>
                                     )} */}
 
-                                    {activeStep !== steps.length &&
-                                        (completed.has(activeStep) ? (
-                                            <Typography variant="caption" className={classes.completed}>Step {activeStep + 1} already completed</Typography>
-                                        ) : (
-                                                <Button variant="contained" color="primary" className={classes.nextStaps} onClick={handleComplete}>
-                                                    {completedSteps() === totalSteps() - 1 ? 'เสร็จสิ้นขั้นตอน' : 'ขั้นตอนถัดไป'}
-                                                </Button>
-                                            ))}
+                                {activeStep !== steps.length &&
+                                    (completed.has(activeStep) ? (
+                                        <Typography variant="caption" className={classes.completed}>Step {activeStep + 1} already completed</Typography>
+                                    ) : (
+                                            <Button variant="contained" color="primary" className={classes.nextStaps} onClick={handleComplete}>
+                                                {completedSteps() === totalSteps() - 1 ? 'เสร็จสิ้นขั้นตอน' : 'ขั้นตอนถัดไป'}
+                                            </Button>
+                                        ))}
                                 {/* </center> */}
                             </div>
                             {/* </ThemeProvider> */}
