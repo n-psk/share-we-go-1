@@ -270,11 +270,13 @@ const Private = function (props) {
             uid: "",
             value: "false",
         });
+
         setStatusOwner({
             share_id: "",
             uid: "",
             value: "false",
-        })
+        });
+        
         firebase.auth().onAuthStateChanged((user) => {
             get.status.owner(user.uid).then(function (data) {
                 get.share.id(data.share_id).then(function (sdata) {
@@ -283,7 +285,7 @@ const Private = function (props) {
             })
         });
 
-
+        window.location.reload();
     };
 
     function exitShareGroup() {
@@ -292,18 +294,20 @@ const Private = function (props) {
             uid: "",
             value: "false",
         });
+
         setStatusMember({
             share_id: "",
             uid: "",
             value: "false",
-        })
+        });
+
         firebase.auth().onAuthStateChanged((user) => {
             get.status.member(user.uid).then(function (data) {
                 d.share.member(data.share_id, data.uid, dateTime)
             })
         });
 
-
+        window.location.reload();
     };
 
 
