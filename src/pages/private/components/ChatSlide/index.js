@@ -11,10 +11,10 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { get } from '../../../../RESTful_API';
-import firebase from '../../../../connect/firebase';
+// import firebase from '../../../../connect/firebase';
 import { Loading } from './components/Loading';
 import ChatBar from '../ChatBar';
-import InputCaht from '../InputCaht';
+import InputCaht from '../InputChat';
 
 
 // style

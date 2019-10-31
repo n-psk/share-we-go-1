@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 
 import AddIcon from '@material-ui/icons/Add';
 
-import { StyleBaseline } from '../../../../components/StyleBaseLine';
+import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 import { CustomMarker } from '../../../../components/CustomMarker';
 
 import { get, post } from '../../../../RESTful_API'
@@ -25,7 +25,7 @@ class UserStatus extends React.Component {
             map: null,
             openVisibility: false,
             openCreateShare: false,
-            openMenuSlide:false
+            openMenuSlide: false
         }
     }
 
@@ -139,17 +139,17 @@ class UserStatus extends React.Component {
     }
 
     onMenuSlide() {
-        this.setState({openMenuSlide: true})
+        this.setState({ openMenuSlide: true })
     }
 
     offMenuSlide() {
-        this.setState({openMenuSlide: false})
+        this.setState({ openMenuSlide: false })
     }
 
     render() {
         return (
             <Fragment>
-                <StyleBaseline>
+                <StyleBaseLine>
                     <Map
                         google={this.props.google}
                         mapOptions={
@@ -177,6 +177,7 @@ class UserStatus extends React.Component {
                                     let myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
 
                                     let marker1 = new CustomMarker(
+                                        google,
                                         myLatlng,
                                         map,
                                         {},
@@ -291,7 +292,7 @@ class UserStatus extends React.Component {
                     </Map>
                     <OpenCreateShare open={this.state.openCreateShare} onClose={this.offCreateShare.bind(this)} />
                     <MenuSlide open={this.state.openMenuSlide} onClose={this.offMenuSlide.bind(this)} uid={uid} />
-                </StyleBaseline>
+                </StyleBaseLine>
             </Fragment>
         )
     }

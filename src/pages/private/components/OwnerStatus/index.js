@@ -9,25 +9,29 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import LocalTaxiIcon from '@material-ui/icons/LocalTaxi';
 
-import { StyleBaseline } from '../../../../components/StyleBaseLine';
-import { CustomMarker } from '../../../../components/CustomMarker';
+
+import { StyleBaseLine } from '../../../../components/StyleBaseLine';
+// import { CustomMarker } from '../../../../components/CustomMarker';
 import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
 import { get } from '../../../../RESTful_API'
 import ChatSlide from '../ChatSlide';
 import MemberTypeIconStatus from '../MemberModalTypeIconStatus';
-import KeyDataTaxiCar from '../KeyDataTaxiCar';
+import CallTaxiModal from '../CallTaxiModal';
 
 
-class MemberStatus extends React.Component {
+class OwnerStatus extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             openChatSlide: false,
-            openCallTaxi: false
+            openCallTaxi: false,
+            share:null
         }
+
+        setInterval(()=> {},)
     }
 
     onChatSlide() {
@@ -51,9 +55,17 @@ class MemberStatus extends React.Component {
     }
 
     render() {
+
+        const latlng = {
+            lat: 14.012107100000001,
+            lng: 100.7210703
+        }
+
+        const { classes } = this.props;
+
         return (
             <Fragment>
-                <StyleBaseline>
+                <StyleBaseLine>
                     <Map
                         google={this.props.google}
                         mapOptions={
@@ -72,13 +84,68 @@ class MemberStatus extends React.Component {
                                 }]
                             }}
                         opts={(google, map) => {
-                            get.users.profile(this.props.uid).then(function (prof) {
+                            get.users.profile(this.props.status.owner.uid).then(function (prof) {
+
+                                function CustomMarker( latlng, map, args, img) {
+                                    this.latlng = latlng;
+                                    this.args = args;
+                                    this.img = img;
+                                    this.maps = map
+                                    // this.google = google
+                                    // setGoogle(google)
+                                }
+                                
+                                CustomMarker.prototype = new google.maps.OverlayView();
+                                
+                                CustomMarker.prototype.onAdd = function () {
+                                    var self = this;
+                                    var div = this.div;
+                                    if (!div) {
+                                        // Generate marker html
+                                        div = this.div = document.createElement('div');
+                                        div.className = 'custom-marker';
+                                        div.style.position = 'absolute';
+                                        var innerDiv = document.createElement('div');
+                                        innerDiv.className = 'custom-marker-inner';
+                                        innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
+                                        div.appendChild(innerDiv);
+                                
+                                        if (typeof (self.args.marker_id) !== 'undefined') {
+                                            div.dataset.marker_id = self.args.marker_id;
+                                        }
+                                
+                                        google.maps.event.addDomListener(div, "click", function (event) {
+                                            google.maps.event.trigger(self, "click");
+                                        });
+                                
+                                        var panes = this.getPanes();
+                                        panes.overlayImage.appendChild(div);
+                                    }
+                                };
+                                
+                                CustomMarker.prototype.draw = function () {
+                                    // มี bug icon ไม่เกาะ map
+                                    if (this.div) {
+                                        // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
+                                        let positionA = new this.google.maps.LatLng(this.latlng.lat, this.latlng.lng);
+                                
+                                        this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
+                                        // console.log(this.pos);
+                                        this.div.style.left = this.pos.x + 'px';
+                                        this.div.style.top = this.pos.y + 'px';
+                                    }
+                                };
+                                
+                                CustomMarker.prototype.getPosition = function () {
+                                    return this.latlng;
+                                };
 
 
-                                get.users.location(this.props.uid).then(function (geo) {
+                                get.users.location(this.props.status.owner.uid).then(function (geo) {
                                     let myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
 
                                     let marker1 = new CustomMarker(
+                                        google,
                                         myLatlng,
                                         map,
                                         {},
@@ -97,13 +164,13 @@ class MemberStatus extends React.Component {
 
                                 })
 
-                                get.share.location(this.props.share_id).then(function (data) {
+                                get.share.location(this.props.status.share_id).then(function (data) {
                                     new AutocompleteDirectionsHandler(google, map, data);
                                 })
                             })
                         }}
                     >
-                        <MemberTypeIconStatus />
+                        <MemberTypeIconStatus uid={this.props.status.uid} />
 
                         <Grid container style={{
                             width: 'min-content',
@@ -118,14 +185,17 @@ class MemberStatus extends React.Component {
                             <Fab size="medium" onClick={this.onChatSlide.bind(this)} color="secondary" aria-label="add" className={classes.buttonChat}>
                                 <QuestionAnswerIcon />
                             </Fab>
-                            <KeyDataTaxiCar open={this.props.openKeyDataTaxiCar} onClose={this.offKeyDataTaxiCar.bind(this)} />
+                            <CallTaxiModal
+                                uid={this.props.status.uid}
+                                open={this.state.oprnCallTaxi}
+                                onClose={this.offCallTaxi.bind(this)} />
                         </Grid>
                         <Button variant="contained" onClick={this.exitShareGroup.bind(this)} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
                             ออกจากกลุ่ม
                         </Button>
                     </Map>
                     <ChatSlide open={this.state.openChatSlide} onClose={this.offChatSlide.bind(this)} />
-                </StyleBaseline>
+                </StyleBaseLine>
             </Fragment>
         )
     }
@@ -153,13 +223,11 @@ const styles = {
     }
 }
 
-MemberStatus.propTypes = {
-    uid: PropTypes.string,
-    share_id: PropTypes.string,
-    uid: PropTypes.string
+OwnerStatus.propTypes = {
+   status: PropTypes.object
 }
 
 export default ConnectApiMaps({
     apiKey: "AIzaSyBy2VY1e11qs-60Ul6aYT5klWYRI1K3RB0",
     libraries: ['places', 'geometry'],
-})(withStyles(styles)(MemberStatus))
+})(withStyles(styles)(OwnerStatus))

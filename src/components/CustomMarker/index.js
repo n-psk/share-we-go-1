@@ -1,10 +1,11 @@
 import React from 'react'
 
-export function CustomMarker(latlng, map, args, img) {
+export function CustomMarker(google, latlng, map, args, img) {
     this.latlng = latlng;
     this.args = args;
     this.img = img;
     this.maps = map
+    this.google = google
     // setGoogle(google)
 }
 
@@ -40,7 +41,7 @@ CustomMarker.prototype.draw = function () {
     // มี bug icon ไม่เกาะ map
     if (this.div) {
         // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
-        let positionA = new google.maps.LatLng(this.latlng.lat, this.latlng.lng);
+        let positionA = new this.google.maps.LatLng(this.latlng.lat, this.latlng.lng);
 
         this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
         // console.log(this.pos);

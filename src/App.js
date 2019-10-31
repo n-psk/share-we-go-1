@@ -16,10 +16,6 @@ class App extends Component {
     this.state = {
       loading: true,
       auth: null,
-      users: null,
-      share: null,
-      status: null,
-      history: null
     }
 
     // const me = this
@@ -39,20 +35,20 @@ class App extends Component {
 
   componentDidMount() {
 
-    // const me = this
     // บล็อกการ zoom
     document.firstElementChild.style.zoom = "reset";
+
+
 
     // กำหนดเวลาโชว์การเปิดตัว
     setTimeout(() => {
       this.setState({ loading: false })
     }, 3000)
-   
+
 
   }
 
   onAuth(user) {
-    const me = this
     if (user) {
       // console.log(user);
       this.setState({ auth: user })
@@ -66,76 +62,9 @@ class App extends Component {
           // handleLocationError(true, infoWindow, map.getCenter());
         });
       }
-
-      get.users.profile(this.state.auth.uid).then(function (data) {
-        // this.updateUsersProfile(data)
-        me.setState({ users: { profile: data } })
-      });
-
-      get.users.location(this.state.auth.uid).then(function (data) {
-        // this.updateUsersLocation(data)
-      });
-
-      get.share.all().then(function (data) {
-        // this.updateShareAll(data)
-      });
-
-      get.status.process(this.state.auth.uid).then(function (data) {
-        // this.updateStatusProcess(data)
-      });
-
-      get.status.share(this.state.auth.uid).then(function (data) {
-        // this.updateStatusShare(data)
-      });
-
-      get.status.owner(this.state.auth.uid).then(function (data) {
-        // this.updateStatusOwner(data)
-      });
-
-      // get.status.member(this.state.auth.uid).then(function (data) {
-      //   // console.log(data);
-      //   me.setState({ status: { member: data } })
-      //   // this.updateStatusMember(data)
-      // });
-
-      get.status.alert(this.state.auth.uid).then(function (data) {
-        // this.updateStatusAlert(data)
-      });
-
     }
   }
 
-  updateUsersProfile(data) {
-    this.setState({ users: { profile: data } })
-  }
-
-  updateUsersLocation(data) {
-    this.setState({ users: { location: data } })
-  }
-
-  updateShareAll(data) {
-    this.setState({ share: data })
-  }
-
-  updateStatusProcess(data) {
-    this.setState({ status: { process: data } })
-  }
-
-  updateStatusShare(data) {
-    this.setState({ status: { share: data } })
-  }
-
-  updateStatusOwner(data) {
-    this.setState({ status: { owner: data } })
-  }
-
-  updateStatusMember(data) {
-    this.setState({ status: { member: data } })
-  }
-
-  updateStatusAlert(data) {
-    this.setState({ status: { alert: data } })
-  }
 
   render() {
 
@@ -148,7 +77,7 @@ class App extends Component {
           : (<React.Fragment>
             {auth !== null
               ? (<React.Fragment>
-                <Private {...this.state} />
+                <Private {...this.state} />}
               </React.Fragment>)
               : (<React.Fragment>
                 <Login />

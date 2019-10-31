@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 
-import { StyleBaseline } from '../../../../components/StyleBaseLine';
+import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 import { CustomMarker } from '../../../../components/CustomMarker';
 import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
@@ -53,7 +53,7 @@ class MemberStatus extends React.Component {
     render() {
         return (
             <Fragment>
-                <StyleBaseline>
+                <StyleBaseLine>
                     <Map
                         google={this.props.google}
                         mapOptions={
@@ -79,6 +79,7 @@ class MemberStatus extends React.Component {
                                     let myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
 
                                     let marker1 = new CustomMarker(
+                                        google,
                                         myLatlng,
                                         map,
                                         {},
@@ -125,7 +126,7 @@ class MemberStatus extends React.Component {
                         </Button>
                     </Map>
                     <ChatSlide open={this.state.openChatSlide} onClose={this.offChatSlide.bind(this)} />
-                </StyleBaseline>
+                </StyleBaseLine>
             </Fragment>
         )
     }

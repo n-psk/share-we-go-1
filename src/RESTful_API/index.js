@@ -392,7 +392,7 @@ export const get = {
         },
         id: function (id) {
 
-            return fetch(`http://localhost:5000/share-we-go-project/us-central1/api/users/${id}/id`).then(
+            return fetch(`http://localhost:5000/share-we-go-project/us-central1/api/users/${id}`).then(
                 function (res) {
                     return res.json();
                 }
