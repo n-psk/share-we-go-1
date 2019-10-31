@@ -112,7 +112,7 @@ class MemberStatus extends React.Component {
                             bottom: '80px',
 
                         }} >
-                            <Fab size="medium" onClick={this.onCallTaxi.bind} aria-label="add" className={classes.buttonTaxi}>
+                            <Fab size="medium" onClick={this.onCallTaxi.bind(this)} aria-label="add" className={classes.buttonTaxi}>
                                 <LocalTaxiIcon />
                             </Fab>
                             <Fab size="medium" onClick={this.onChatSlide.bind(this)} color="secondary" aria-label="add" className={classes.buttonChat}>
