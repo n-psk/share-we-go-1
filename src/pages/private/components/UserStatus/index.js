@@ -1,22 +1,35 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/styles';
 
 import ConnectApiMaps, { Map } from 'maps-google-react';
+import $ from 'jquery';
 
-import { StyleBaseline } from './components/StyleBaseLine';
-import { CustomMarker } from './components/CustomMarker';
+import Button from '@material-ui/core/Button';
 
-import { get } from '../../../../RESTful_API'
+import AddIcon from '@material-ui/icons/Add';
+
+import { StyleBaseline } from '../../../../components/StyleBaseLine';
+import { CustomMarker } from '../../../../components/CustomMarker';
+
+import { get, post } from '../../../../RESTful_API'
+import { VisibilityButton } from '../../../../components/VisibilityButton';
+import OpenCreateShare from '../OpenCreateShare';
 
 
 class UserStatus extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            share: null
+            share: null,
+            map: null,
+            openVisibility: false,
+            openCreateShare: false,
+            openMenuSlide:false
         }
     }
 
-    updateData(key) {
+    updateDataShareClient(key) {
         const me = this
 
         get.share.location(key).then(function (location) {
@@ -40,6 +53,99 @@ class UserStatus extends React.Component {
         })
 
     }
+
+    joinLocation(key, uid) {
+        post.share.member(key, {
+            [uid]: {
+                id: `${uid}`,
+                profile: udata
+            }
+        },
+            dateTime
+        )
+
+        post.status.share(
+            uid,
+            {
+                id: `${key}`,
+                uid: `${uid}`,
+                value: "false"
+            },
+            dateTime
+        );
+
+        post.status.owner(
+            uid,
+            {
+                share_id: `${key}`,
+                uid: `${uid}`,
+                value: "false"
+            },
+            dateTime
+        );
+
+        post.status.member(
+            uid,
+            {
+                share_id: `${key}`,
+                uid: `${uid}`,
+                value: "true"
+            },
+            dateTime
+        );
+
+        post.status.alert(
+            uid,
+            {
+                share_id: `${key}`,
+                uid: `${uid}`,
+                value: "false"
+            },
+            dateTime
+        );
+
+        post.status.process(
+            uid,
+            {
+                share_id: `${key}`,
+                uid: `${uid}`,
+                value: "false"
+            },
+            dateTime
+        );
+    }
+
+    MapSearch(props, map, handleDrawerOpen) {
+        return (
+            <SearchBar >
+                <SearchMap onClick={handleDrawerOpen} map={map} {...props} />
+            </SearchBar>)
+    }
+
+    onVisibility() {
+        this.setState({ openVisibility: true })
+    }
+
+    offVisibility() {
+        this.setState({ openVisibility: false })
+    }
+
+    onCreateShare() {
+        this.setState({ openCreateShare: true })
+    }
+
+    offCreateShare() {
+        this.setState({ openCreateShare: false })
+    }
+
+    onMenuSlide() {
+        this.setState({openMenuSlide: true})
+    }
+
+    offMenuSlide() {
+        this.setState({openMenuSlide: false})
+    }
+
     render() {
         return (
             <Fragment>
@@ -62,6 +168,8 @@ class UserStatus extends React.Component {
                                 }]
                             }}
                         opts={(google, map) => {
+
+                            this.MapSearch(this.props, map, this.onMenuSlide.bind(this))
                             get.users.profile(this.props.uid).then(function (prof) {
 
 
@@ -88,9 +196,11 @@ class UserStatus extends React.Component {
 
                                 })
 
+                                // share 
                                 get.share.all().then(function (data) {
                                     Object.keys(data).map((key) => {
                                         // console.log(key); // all key
+
                                         get.status.share(key).then(function (status) {
                                             if (status.value === "true") {
                                                 // console.log(status.value);
@@ -160,8 +270,10 @@ class UserStatus extends React.Component {
                                                         });
 
                                                         $(document).on('click', `#join-share-${key}`, function () {
-
+                                                            this.joinLocation(key, user.uid)
                                                         })
+                                                    } else {
+                                                        this.updateDataShareClient(key)
                                                     }
                                                 })
                                             }
@@ -170,9 +282,38 @@ class UserStatus extends React.Component {
                                 })
                             })
                         }}
-                    ></Map>
+                    >
+                        <MapSearch />
+                        <VisibilityButton open={this.state.openVisibility} on={this.onVisibility.bind(this)} off={this.offVisibility.bind(this)} />
+                        <Button onClick={this.onCreateShare.bind(this)} variant="contained" style={{ backgroundColor: '#ffffff' }} className={this.props.classes.fab}>
+                            <AddIcon color="action" fontSize="large" />
+                        </Button>
+                    </Map>
+                    <OpenCreateShare open={this.state.openCreateShare} onClose={this.offCreateShare.bind(this)} />
+                    <MenuSlide open={this.state.openMenuSlide} onClose={this.offMenuSlide.bind(this)} uid={uid} />
                 </StyleBaseline>
             </Fragment>
         )
     }
 }
+
+UserStatus.propTypes = {
+    uid: PropTypes.string
+}
+
+const styles = {
+    fab: {
+        height: '45px',
+        bottom: '16px',
+        width: '-webkit-fill-available',
+        position: 'absolute',
+        marginLeft: '22px',
+        marginRight: '22px',
+        borderRadius: 12
+    }
+}
+
+export default ConnectApiMaps({
+    apiKey: "AIzaSyBy2VY1e11qs-60Ul6aYT5klWYRI1K3RB0",
+    libraries: ['places', 'geometry'],
+})(withStyles(styles)(UserStatus))

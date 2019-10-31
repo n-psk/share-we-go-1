@@ -4,9 +4,7 @@ export function CustomMarker(latlng, map, args, img) {
     this.latlng = latlng;
     this.args = args;
     this.img = img;
-    this.setMap(map);
     this.maps = map
-    setMap(map)
     // setGoogle(google)
 }
 

@@ -377,9 +377,7 @@ function ShareLocation(props) {
                             width: '-webkit-fill-available'
                         }}>
                             <center >
-                                <Link to="/">
-                                    <Button variant="contained" onClick={handleReset} color="primary" >เปิดแชร์</Button>
-                                </Link>
+                                    <Button variant="contained" onClick={props.onClose} color="primary" >เปิดแชร์</Button>
                             </center>
                         </div>
                     </div>
@@ -428,9 +426,8 @@ function ShareLocation(props) {
     )
 }
 
-// QontoStepIcon.propTypes = {
-//     active: PropTypes.bool,
-//     completed: PropTypes.bool
-// };
+ShareLocation.propTypes = {
+   onClose: PropTypes.func
+};
 
 export default ShareLocation;
