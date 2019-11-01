@@ -63,4 +63,4 @@ KeyDataTaxiCar.propTypes = {
     onClose: PropTypes.func
 }
 
-export default withStyles(styles)(KeyDataTaxiCar)
+export default KeyDataTaxiCar

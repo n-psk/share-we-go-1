@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-// import UserStatus from './components/UserStatus';
-// import MemberStatus from './components/MemberStatus';
+import UserStatus from './components/UserStatus';
+import MemberStatus from './components/MemberStatus';
 import OwnerStatus from './components/OwnerStatus';
 import { get } from '../../RESTful_API';
 
@@ -15,7 +15,7 @@ class Private extends React.Component {
             get.status.id(this.props.auth.uid).then(function (data) {
                 me.updateStatus(data)
             })
-        }, 1000)
+        }, 3000)
 
     }
 
@@ -32,10 +32,10 @@ class Private extends React.Component {
                         {this.state.status.owner.value !== "false"
                             ? <OwnerStatus {...this.state} />
                             : (<Fragment>
-                                {/* {this.state.status.member.value !== "false"
+                                {this.state.status.member.value !== "false"
                                     ? <MemberStatus />
                                     : <UserStatus />
-                                } */}
+                                }
                             </Fragment>)
                         }
                     </Fragment>)

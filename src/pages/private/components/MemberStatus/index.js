@@ -12,8 +12,8 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import { StyleBaseLine } from '../../../../components/StyleBaseLine';
-import { CustomMarker } from '../../../../components/CustomMarker';
-import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
+// import { CustomMarker } from '../../../../components/CustomMarker';
+// import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
 import { get } from '../../../../RESTful_API'
 import ChatSlide from '../ChatSlide';
@@ -51,6 +51,14 @@ class MemberStatus extends React.Component {
     }
 
     render() {
+
+        const latlng = {
+            lat: 14.012107100000001,
+            lng: 100.7210703
+        }
+
+        const { classes } = this.props;
+        
         return (
             <Fragment>
                 <StyleBaseLine>
@@ -72,23 +80,152 @@ class MemberStatus extends React.Component {
                                 }]
                             }}
                         opts={(google, map) => {
-                            get.users.profile(this.props.uid).then(function (prof) {
+                            const me = this
+                            get.users.profile(this.props.status.member.uid).then(function (profile) {
+
+                                function CustomMarker(latlng, map, args, img) {
+                                    this.latlng = latlng;
+                                    this.args = args;
+                                    this.img = img;
+                                    this.maps = map
+                                    // this.google = google
+                                    // setGoogle(google)
+                                }
+
+                                CustomMarker.prototype = new google.maps.OverlayView();
+
+                                CustomMarker.prototype.onAdd = function () {
+                                    var self = this;
+                                    var div = this.div;
+                                    if (!div) {
+                                        // Generate marker html
+                                        div = this.div = document.createElement('div');
+                                        div.className = 'custom-marker';
+                                        div.style.position = 'absolute';
+                                        var innerDiv = document.createElement('div');
+                                        innerDiv.className = 'custom-marker-inner';
+                                        innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
+                                        div.appendChild(innerDiv);
+
+                                        if (typeof (self.args.marker_id) !== 'undefined') {
+                                            div.dataset.marker_id = self.args.marker_id;
+                                        }
+
+                                        google.maps.event.addDomListener(div, "click", function (event) {
+                                            google.maps.event.trigger(self, "click");
+                                        });
+
+                                        var panes = this.getPanes();
+                                        panes.overlayImage.appendChild(div);
+                                    }
+                                };
+
+                                CustomMarker.prototype.draw = function () {
+                                    // มี bug icon ไม่เกาะ map
+                                    if (this.div) {
+                                        // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
+                                        let positionA = new this.google.maps.LatLng(this.latlng.lat, this.latlng.lng);
+
+                                        this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
+                                        // console.log(this.pos);
+                                        this.div.style.left = this.pos.x + 'px';
+                                        this.div.style.top = this.pos.y + 'px';
+                                    }
+                                };
+
+                                CustomMarker.prototype.getPosition = function () {
+                                    return this.latlng;
+                                };
+
+                                function AutocompleteDirectionsHandler(google, map, data) {
+                                    this.map = map;
+                                    this.originPlaceId = null;
+                                    this.destinationPlaceId = null;
+                                    this.travelMode = 'WALKING';
+                                    this.directionsService = new google.maps.DirectionsService;
+                                    this.directionsRenderer = new google.maps.DirectionsRenderer;
+                                    this.directionsRenderer.setMap(this.map);
+                                
+                                    var me = this
+                                
+                                    if (data.share === true) {
+                                        me.setupPlaceChangedListener(data.geocoded_waypoints[0].place_id, 'ORIG');
+                                        me.setupPlaceChangedListener(data.geocoded_waypoints[1].place_id, 'DEST');
+                                        me.setupClickListener(data.request.travelMode);
+                                
+                                    } else {
+                                        me.setupPlaceChangedListener(data.geocoded_waypoints[0].place_id, 'ORIG');
+                                        me.setupPlaceChangedListener(data.geocoded_waypoints[1].place_id, 'DEST');
+                                        me.setupClickListener(data.request.travelMode);
+                                    }
+                                }
+                                
+                                // Sets a listener on a radio button to change the filter type on Places
+                                // Autocomplete.
+                                AutocompleteDirectionsHandler.prototype.setupClickListener = function (mode) {
+                                    var me = this;
+                                
+                                    me.travelMode = mode;
+                                    me.route();
+                                };
+                                
+                                AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (
+                                    place, mode) {
+                                    var me = this;
+                                
+                                    console.log(place);
+                                
+                                    if (!place) {
+                                        alert('Please select an option from the dropdown list.');
+                                        return;
+                                    }
+                                    if (mode === 'ORIG') {
+                                        me.originPlaceId = place;
+                                    } else {
+                                        me.destinationPlaceId = place;
+                                    }
+                                    me.route();
+                                };
+                                
+                                AutocompleteDirectionsHandler.prototype.route = function () {
+                                    if (!this.originPlaceId || !this.destinationPlaceId) {
+                                        return;
+                                    }
+                                    var me = this;
+                                
+                                    this.directionsService.route(
+                                        {
+                                            origin: { 'placeId': this.originPlaceId },
+                                            destination: { 'placeId': this.destinationPlaceId },
+                                            travelMode: this.travelMode
+                                        },
+                                        function (response, status) {
+                                            if (status === 'OK') {
+                                                me.directionsRenderer.setDirections(response);
+                                                // console.log(response);
+                                
+                                            } else {
+                                                alert('Directions request failed due to ' + status);
+                                                // console.log(response, status);
+                                
+                                            }
+                                        });
+                                };
 
 
-                                get.users.location(this.props.uid).then(function (geo) {
-                                    let myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
+                                get.users.location(me.props.status.member.uid).then((location) => {
+                                    let myLatlng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
 
                                     let marker1 = new CustomMarker(
-                                        google,
                                         myLatlng,
                                         map,
                                         {},
-                                        prof.photoURL
+                                        profile.photoURL
                                     );
 
                                     let pos = {
-                                        lat: geo.coords.latitude,
-                                        lng: geo.coords.longitude
+                                        lat: location.coords.latitude,
+                                        lng: location.coords.longitude
                                     };
 
                                     marker1.latlng = { lat: pos.lat, lng: pos.lng };
@@ -98,7 +235,7 @@ class MemberStatus extends React.Component {
 
                                 })
 
-                                get.share.location(this.props.share_id).then(function (data) {
+                                get.share.location(me.props.status.member.share_id).then(function (data) {
                                     new AutocompleteDirectionsHandler(google, map, data);
                                 })
                             })

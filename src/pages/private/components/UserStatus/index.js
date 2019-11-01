@@ -10,11 +10,13 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
 import { StyleBaseLine } from '../../../../components/StyleBaseLine';
-import { CustomMarker } from '../../../../components/CustomMarker';
+// import { CustomMarker } from '../../../../components/CustomMarker';
 
 import { get, post } from '../../../../RESTful_API'
 import { VisibilityButton } from '../../../../components/VisibilityButton';
 import OpenCreateShare from '../OpenCreateShare';
+import { dateTime } from '../../../../module'
+
 
 
 class UserStatus extends React.Component {
@@ -32,33 +34,37 @@ class UserStatus extends React.Component {
     updateDataShareClient(key) {
         const me = this
 
-        get.share.location(key).then(function (location) {
-            me.setState({ share: { [key]: { location_share: location } } })
+        get.share.id(key).then(function (data) {
+            me.setState({ share: data })
         })
 
-        get.share.date(key).then(function (date) {
-            me.setState({ share: { [key]: { date_share: date } } })
-        })
+        // get.share.location(key).then(function (location) {
+        //     me.setState({ share: { [key]: { location_share: location } } })
+        // })
 
-        get.share.max_number(key).then(function (max_number) {
-            me.setState({ share: { [key]: { max_number_share: max_number } } })
-        })
+        // get.share.date(key).then(function (date) {
+        //     me.setState({ share: { [key]: { date_share: date } } })
+        // })
 
-        get.share.sex(key).then(function (sex) {
-            me.setState({ share: { [key]: { sex_share: sex } } })
-        })
+        // get.share.max_number(key).then(function (max_number) {
+        //     me.setState({ share: { [key]: { max_number_share: max_number } } })
+        // })
 
-        get.share.member(key).then(function (member) {
-            me.setState({ share: { [key]: { member_share: member } } })
-        })
+        // get.share.sex(key).then(function (sex) {
+        //     me.setState({ share: { [key]: { sex_share: sex } } })
+        // })
+
+        // get.share.member(key).then(function (member) {
+        //     me.setState({ share: { [key]: { member_share: member } } })
+        // })
 
     }
 
-    joinLocation(key, uid) {
+    joinLocation(key, uid, data) {
         post.share.member(key, {
             [uid]: {
                 id: `${uid}`,
-                profile: udata
+                profile: data
             }
         },
             dateTime
@@ -115,12 +121,13 @@ class UserStatus extends React.Component {
         );
     }
 
-    MapSearch(props, map, handleDrawerOpen) {
-        return (
-            <SearchBar >
-                <SearchMap onClick={handleDrawerOpen} map={map} {...props} />
-            </SearchBar>)
-    }
+    // MapSearch(props, map, handleDrawerOpen) {
+    //     return (
+    //         <SearchBar >
+    //             <SearchMap onClick={handleDrawerOpen} map={map} {...props} />
+    //         </SearchBar>
+    //     )
+    // }
 
     onVisibility() {
         this.setState({ openVisibility: true })
@@ -147,6 +154,12 @@ class UserStatus extends React.Component {
     }
 
     render() {
+
+        const latlng = {
+            lat: 14.012107100000001,
+            lng: 100.7210703
+        }
+
         return (
             <Fragment>
                 <StyleBaseLine>
@@ -172,6 +185,59 @@ class UserStatus extends React.Component {
                             this.MapSearch(this.props, map, this.onMenuSlide.bind(this))
                             get.users.profile(this.props.uid).then(function (prof) {
 
+                                function CustomMarker(google, latlng, map, args, img) {
+                                    this.latlng = latlng;
+                                    this.args = args;
+                                    this.img = img;
+                                    this.maps = map
+                                    this.google = google
+                                    // setGoogle(google)
+                                }
+
+                                CustomMarker.prototype = new google.maps.OverlayView();
+
+                                CustomMarker.prototype.onAdd = function () {
+                                    var self = this;
+                                    var div = this.div;
+                                    if (!div) {
+                                        // Generate marker html
+                                        div = this.div = document.createElement('div');
+                                        div.className = 'custom-marker';
+                                        div.style.position = 'absolute';
+                                        var innerDiv = document.createElement('div');
+                                        innerDiv.className = 'custom-marker-inner';
+                                        innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
+                                        div.appendChild(innerDiv);
+
+                                        if (typeof (self.args.marker_id) !== 'undefined') {
+                                            div.dataset.marker_id = self.args.marker_id;
+                                        }
+
+                                        google.maps.event.addDomListener(div, "click", function (event) {
+                                            google.maps.event.trigger(self, "click");
+                                        });
+
+                                        var panes = this.getPanes();
+                                        panes.overlayImage.appendChild(div);
+                                    }
+                                };
+
+                                CustomMarker.prototype.draw = function () {
+                                    // มี bug icon ไม่เกาะ map
+                                    if (this.div) {
+                                        // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
+                                        let positionA = new this.google.maps.LatLng(this.latlng.lat, this.latlng.lng);
+
+                                        this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
+                                        // console.log(this.pos);
+                                        this.div.style.left = this.pos.x + 'px';
+                                        this.div.style.top = this.pos.y + 'px';
+                                    }
+                                };
+
+                                CustomMarker.prototype.getPosition = function () {
+                                    return this.latlng;
+                                };
 
                                 get.users.location(this.props.uid).then(function (geo) {
                                     let myLatlng = new google.maps.LatLng(geo.coords.latitude, geo.coords.longitude);
@@ -271,7 +337,10 @@ class UserStatus extends React.Component {
                                                         });
 
                                                         $(document).on('click', `#join-share-${key}`, function () {
-                                                            this.joinLocation(key, user.uid)
+                                                            get.users.profile(user.uid).then((profile) => {
+
+                                                                this.joinLocation(key, user.uid, profile)
+                                                            })
                                                         })
                                                     } else {
                                                         this.updateDataShareClient(key)
@@ -284,7 +353,7 @@ class UserStatus extends React.Component {
                             })
                         }}
                     >
-                        <MapSearch />
+                        {/* <MapSearch /> */}
                         <VisibilityButton open={this.state.openVisibility} on={this.onVisibility.bind(this)} off={this.offVisibility.bind(this)} />
                         <Button onClick={this.onCreateShare.bind(this)} variant="contained" style={{ backgroundColor: '#ffffff' }} className={this.props.classes.fab}>
                             <AddIcon color="action" fontSize="large" />

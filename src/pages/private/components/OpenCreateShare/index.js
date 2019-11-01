@@ -49,7 +49,7 @@ function OpenCreateShare(props) {
                     paper: classes.drawerPaper,
                 }}
             >
-                {profile !== null
+                {props.open !== null
                     ? (<Fragment>
                         <div className={classes.drawerHeader}>
                             <ShareLocation onClose={props.onClose} />

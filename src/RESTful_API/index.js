@@ -1,5 +1,5 @@
 import React from 'react';
-import os from 'os';
+// import os from 'os';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
