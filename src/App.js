@@ -77,7 +77,7 @@ class App extends Component {
           : (<React.Fragment>
             {auth !== null
               ? (<React.Fragment>
-                <Private {...this.state} />}
+                <Private {...this.state} />
               </React.Fragment>)
               : (<React.Fragment>
                 <Login />

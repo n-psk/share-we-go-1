@@ -34,7 +34,7 @@ class Private extends React.Component {
                             : (<Fragment>
                                 {this.state.status.member.value !== "false"
                                     ? <MemberStatus />
-                                    : <UserStatus />
+                                    : <UserStatus uid={this.props.auth.uid} {...this.state} />
                                 }
                             </Fragment>)
                         }
