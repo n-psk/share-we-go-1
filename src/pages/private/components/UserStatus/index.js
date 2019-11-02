@@ -269,65 +269,93 @@ const UserStatus = (props) => {
                                     if (status.value !== "false") {
                                         // console.log(status.value);
 
-                                        function CustomMarkerShare(latlng, map, args, img) {
-                                            this.latlng = latlng;
-                                            this.args = args;
-                                            this.img = img;
-                                            this.setMap(map);
-                                            this.maps = map
-                                            setMap(map)
-                                            // setGoogle(google)
-                                        }
+                                        // var markers = []
+                                        get.share.id(key).then((share) => {
+                                            let myLatlng = new google.maps.LatLng(share.location.routes[0].legs[0].start_location.lat, share.location.routes[0].legs[0].start_location.lng);
 
-                                        CustomMarkerShare.prototype = new google.maps.OverlayView();
+                                            function CustomMarkerShare(latlng, map, args, img) {
+                                                this.latlng = latlng;
+                                                this.args = args;
+                                                this.img = img;
+                                                this.setMap(map);
+                                                this.maps = map
+                                                setMap(map)
+                                                // setGoogle(google)
+                                            }
 
-                                        CustomMarkerShare.prototype.onAdd = function () {
-                                            var self = this;
-                                            var div = this.div;
-                                            if (!div) {
-                                                // Generate marker html
-                                                div = this.div = document.createElement('div');
-                                                div.className = 'custom-marker';
-                                                div.id = `${key}`
-                                                // div.onClick = function (key) {}
-                                                div.style.position = 'absolute';
-                                                var innerDiv = document.createElement('div');
-                                                innerDiv.className = 'custom-marker-inner';
-                                                innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
-                                                div.appendChild(innerDiv);
+                                            CustomMarkerShare.prototype = new google.maps.OverlayView();
 
-                                                if (typeof (self.args.marker_id) !== 'undefined') {
-                                                    div.dataset.marker_id = self.args.marker_id;
+                                            CustomMarkerShare.prototype.onAdd = function () {
+                                                var self = this;
+                                                var div = this.div;
+                                                if (!div) {
+                                                    // Generate marker html
+                                                    div = this.div = document.createElement('div');
+                                                    div.className = 'custom-marker';
+                                                    div.id = `${key}`
+                                                    div.dataset.marker_id = `${key}`
+                                                    div.style.position = 'absolute';
+                                                    var innerDiv = document.createElement('div');
+                                                    innerDiv.className = 'custom-marker-inner';
+                                                    innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
+                                                    div.appendChild(innerDiv);
+
+                                                    if (typeof (self.args.marker_id) !== 'undefined') {
+                                                        div.dataset.marker_id = self.args.marker_id;
+                                                    }
+
+                                                    google.maps.event.addDomListener(div, "click", function (event) {
+                                                        google.maps.event.trigger(self, "click");
+                                                    });
+
+                                                    var panes = this.getPanes();
+                                                    panes.overlayImage.appendChild(div);
                                                 }
+                                            };
 
-                                                google.maps.event.addDomListener(div, "click", function (event) {
-                                                    google.maps.event.trigger(document.getElementById(`${key}`), "click");
-                                                });
+                                            CustomMarkerShare.prototype.draw = function () {
+                                                // มี bug icon ไม่เกาะ map
+                                                if (this.div) {
+                                                    // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
+                                                    let positionA = new google.maps.LatLng(this.latlng.lat, this.latlng.lng);
 
-                                                var panes = this.getPanes();
-                                                panes.overlayImage.appendChild(div);
-                                            }
-                                        };
+                                                    this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
+                                                    // console.log(this.pos);
+                                                    this.div.style.left = this.pos.x + 'px';
+                                                    this.div.style.top = this.pos.y + 'px';
+                                                }
+                                            };
 
-                                        CustomMarkerShare.prototype.draw = function () {
-                                            // มี bug icon ไม่เกาะ map
-                                            if (this.div) {
-                                                // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
-                                                let positionA = new google.maps.LatLng(this.latlng.lat, this.latlng.lng);
+                                            CustomMarkerShare.prototype.getPosition = function () {
+                                                return this.latlng;
+                                            };
 
-                                                this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
-                                                // console.log(this.pos);
-                                                this.div.style.left = this.pos.x + 'px';
-                                                this.div.style.top = this.pos.y + 'px';
-                                            }
-                                        };
+                                            var markers = []
 
-                                        CustomMarkerShare.prototype.getPosition = function () {
-                                            return this.latlng;
-                                        };
+                                            const marker = new CustomMarkerShare(
+                                                myLatlng,
+                                                map,
+                                                { marker_id: `${key}` },
+                                                "https://img.icons8.com/ios-glyphs/30/000000/car-cleaning.png"
+                                            )
 
-                                        function InfoWindowShare(key, share, marker) {
-                                            let contentString = `
+                                            // markers.push(marker)
+                                            // console.log(markers);
+                                            
+
+                                            var pos = {
+                                                lat: share.location.routes[0].legs[0].start_location.lat,
+                                                lng: share.location.routes[0].legs[0].start_location.lng
+                                            };
+
+                                            marker.latlng = { lat: pos.lat, lng: pos.lng };
+
+                                            marker.draw();
+
+
+                                            map.setCenter(pos);
+
+                                            const content = `
                                             <center>
                                             <h2>ข้อมูลการแชร์</h2>
                                             </center>
@@ -352,15 +380,15 @@ const UserStatus = (props) => {
                                             box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
                                             }" id="join-share-${key}" >เข้าร่วม</button></center>`
 
-                                            var infowindow = new google.maps.InfoWindow({
-                                                content: contentString,
+                                            const infowindow = new google.maps.InfoWindow({
+                                                content: '',
                                                 maxWidth: 500
                                             });
 
 
                                             marker.addListener('click', function (key) {
 
-                                                // infowindow.setContent(contentString)
+                                                infowindow.setContent(content)
                                                 infowindow.open(map, marker);
 
                                                 if (Object.keys(share.member).length > share.max_number.value) {
@@ -427,36 +455,6 @@ const UserStatus = (props) => {
                                                     }
                                                 })
                                             })
-
-                                        }
-
-
-                                        get.share.id(key).then((share) => {
-                                            let myLatlng = new google.maps.LatLng(share.location.routes[0].legs[0].start_location.lat, share.location.routes[0].legs[0].start_location.lng);
-
-                                            var markers = []
-                                            markers.push(new CustomMarkerShare(
-                                                myLatlng,
-                                                map,
-                                                {},
-                                                "https://img.icons8.com/ios-glyphs/30/000000/car-cleaning.png"
-                                            ))
-
-                                            var pos = {
-                                                lat: share.location.routes[0].legs[0].start_location.lat,
-                                                lng: share.location.routes[0].legs[0].start_location.lng
-                                            };
-
-                                            // marker.latlng = { lat: pos.lat, lng: pos.lng };
-
-                                            markers.map(marker => {
-
-                                                marker.draw();
-                                            })
-
-                                            map.setCenter(pos);
-                                            new InfoWindowShare(key, share, marker)
-
 
                                         })
                                     }
