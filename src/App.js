@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-// import { BrowserRouter as Router, Route } from "react-router-dom";
-// import { routerPublic, routerPrivate } from './router';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import firebase from './connect/firebase';
-import Private from './pages/private';
-import Login from './pages/login'
+// import Private from './pages/private';
+// import Login from './pages/login'
 import { post, get } from './RESTful_API';
 import { dateTime } from './module';
 import './App.css';
@@ -72,19 +72,33 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        {loading == true
-          ? (<React.Fragment><Loading /></React.Fragment>)
-          : (<React.Fragment>
-            {auth !== null
-              ? (<React.Fragment>
-                <Private {...this.state} />
-              </React.Fragment>)
-              : (<React.Fragment>
-                <Login />
-              </React.Fragment>)
-            }
-          </React.Fragment>)
-        }
+        <Router>
+          {loading == true
+            ? (<React.Fragment><Loading /></React.Fragment>)
+            : (<React.Fragment>
+              {auth === false
+                ? (<React.Fragment>{
+                  routerPublic.map((route, index) => (
+                    <Route
+                      key={index}
+                      path={route.path}
+                      exact={route.exact}
+                      component={route.page}
+                    />
+                  ))
+                }</React.Fragment>)
+                : (<React.Fragment>{routerPrivate.map((route, index) => (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.page}
+                  />
+                ))}</React.Fragment>)
+              }
+            </React.Fragment>)
+          }
+        </Router>
       </React.Fragment>
     )
   }

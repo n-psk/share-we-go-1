@@ -2,21 +2,31 @@ import React, { Fragment } from 'react';
 import UserStatus from './components/UserStatus';
 import MemberStatus from './components/MemberStatus';
 import OwnerStatus from './components/OwnerStatus';
+import firebase from '../../connect/firebase';
 import { get } from '../../RESTful_API';
 
 class Private extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            status: null
+            status: null,
+            auth: null
         }
         const me = this
-        setInterval(() => {
-            get.status.id(this.props.auth.uid).then(function (data) {
-                me.updateStatus(data)
-            })
-        }, 3000)
 
+        firebase.auth().onAuthStateChanged((user) => {
+            me.updateAuth(user)
+            setInterval(() => {
+                get.status.id(this.state.auth.uid).then(function (data) {
+                    me.updateStatus(data)
+                })
+            }, 3000)
+        }
+        )
+    }
+
+    updateAuth(data) {
+        this.setState({ auth: data })
     }
 
     updateStatus(data) {
@@ -34,7 +44,7 @@ class Private extends React.Component {
                             : (<Fragment>
                                 {this.state.status.member.value !== "false"
                                     ? <MemberStatus />
-                                    : <UserStatus uid={this.props.auth.uid} {...this.state} />
+                                    : <UserStatus uid={this.state.auth.uid} {...this.state} />
                                 }
                             </Fragment>)
                         }

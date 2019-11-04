@@ -117,7 +117,7 @@ function PlaceAutocompleteAndDirections(props) {
             function (response, status) {
                 if (status === 'OK') {
                     me.directionsRenderer.setDirections(response);
-                    // console.log(response);
+                    console.log(response);
                     // socket.emit('origin_destination_route', response)
                     firebase.auth().onAuthStateChanged((user) => {
                         post.share.location(user.uid, response, dateTime)
@@ -177,6 +177,10 @@ function PlaceAutocompleteAndDirections(props) {
                 // initMap(google, map)
                 //    setGoogle(google);
                 //    setMap(map)
+                console.log();
+
+                
+                
                 new AutocompleteDirectionsHandler(google, map);
             }}
         >

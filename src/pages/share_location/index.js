@@ -271,6 +271,8 @@ function ShareLocation(props) {
             get.users.profile(user.uid).then(function (data) {
 
                 post.share.owner(user.uid, { id: user.uid, profile: data }, dateTime)
+                post.share.number(user.uid, { share_id: user.uid, uid: user.uid }, dateTime)
+
             })
         })
     }
@@ -300,7 +302,7 @@ function ShareLocation(props) {
     return (
         <div className={classes.root}>
             <ShareLocationBar>
-                <Button onClick={goBack}>
+                <Button onClick={props.onClose}>
                     <IconButton aria-label="Back" >
                         <ArrowBackIosIcon />
                     </IconButton>
@@ -427,7 +429,8 @@ function ShareLocation(props) {
 }
 
 ShareLocation.propTypes = {
-   onClose: PropTypes.func
+   onClose: PropTypes.func,
+   map: PropTypes.object
 };
 
 export default ShareLocation;

@@ -2,6 +2,8 @@ import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 
+import {Link} from 'react-router-dom';
+
 import ConnectApiMaps, { Map } from 'maps-google-react';
 import $ from 'jquery';
 
@@ -13,13 +15,12 @@ import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 
 import { get, post } from '../../../../RESTful_API'
 import { VisibilityButton } from '../../../../components/VisibilityButton';
-import OpenCreateShare from '../OpenCreateShare';
 import { dateTime } from '../../../../module';
 import SearchBar from '../SearchBar';
 import SearchMap from '../SearchMap';
 import MenuSlide from '../MenuSlide';
 
-import './styles/marker-custom.css'
+import './styles/marker-custom.css';
 
 
 const UserStatus = (props) => {
@@ -242,13 +243,16 @@ const UserStatus = (props) => {
                             updateUser(data)
 
                             var myLatlng = new google.maps.LatLng(data.location.coords.latitude, data.location.coords.longitude);
-
-                            var marker1 = new CustomMarker(
-                                myLatlng,
-                                map,
-                                {},
-                                data.profile.photoURL
-                            );
+                            if (data.profile !== undefined) {
+                                var marker1 = new CustomMarker(
+                                    myLatlng,
+                                    map,
+                                    {},
+                                    data.profile.photoURL
+                                );
+                            } else {
+                                window.location.reload()
+                            }
 
                             var pos = {
                                 lat: data.location.coords.latitude,
@@ -262,115 +266,50 @@ const UserStatus = (props) => {
                         });
 
                         // share
-                        get.status.all().then(function (data) {
+                        get.share.all().then(function (data) {
                             Object.keys(data).map((key) => {
                                 // console.log(key); // all key
                                 get.status.share(key).then(function (status) {
                                     if (status.value !== "false") {
-                                        // console.log(status.value);
-
-                                        // var markers = []
-                                        get.share.id(key).then((share) => {
-                                            let myLatlng = new google.maps.LatLng(share.location.routes[0].legs[0].start_location.lat, share.location.routes[0].legs[0].start_location.lng);
-
-                                            function CustomMarkerShare(latlng, map, args, img) {
-                                                this.latlng = latlng;
-                                                this.args = args;
-                                                this.img = img;
-                                                this.setMap(map);
-                                                this.maps = map
-                                                setMap(map)
-                                                // setGoogle(google)
-                                            }
-
-                                            CustomMarkerShare.prototype = new google.maps.OverlayView();
-
-                                            CustomMarkerShare.prototype.onAdd = function () {
-                                                var self = this;
-                                                var div = this.div;
-                                                if (!div) {
-                                                    // Generate marker html
-                                                    div = this.div = document.createElement('div');
-                                                    div.className = 'custom-marker';
-                                                    div.id = `${key}`
-                                                    div.dataset.marker_id = `${key}`
-                                                    div.style.position = 'absolute';
-                                                    var innerDiv = document.createElement('div');
-                                                    innerDiv.className = 'custom-marker-inner';
-                                                    innerDiv.innerHTML = `<img  src="${this.img}" style="border-radius: inherit;width: 20px;height: 20px;margin: 2px;"/>`
-                                                    div.appendChild(innerDiv);
-
-                                                    if (typeof (self.args.marker_id) !== 'undefined') {
-                                                        div.dataset.marker_id = self.args.marker_id;
-                                                    }
-
-                                                    google.maps.event.addDomListener(div, "click", function (event) {
-                                                        google.maps.event.trigger(self, "click");
-                                                    });
-
-                                                    var panes = this.getPanes();
-                                                    panes.overlayImage.appendChild(div);
-                                                }
-                                            };
-
-                                            CustomMarkerShare.prototype.draw = function () {
-                                                // มี bug icon ไม่เกาะ map
-                                                if (this.div) {
-                                                    // กำหนด ตำแหน่ง ของhtml ที่สร้างไว้
-                                                    let positionA = new google.maps.LatLng(this.latlng.lat, this.latlng.lng);
-
-                                                    this.pos = this.getProjection().fromLatLngToDivPixel(positionA);
-                                                    // console.log(this.pos);
-                                                    this.div.style.left = this.pos.x + 'px';
-                                                    this.div.style.top = this.pos.y + 'px';
-                                                }
-                                            };
-
-                                            CustomMarkerShare.prototype.getPosition = function () {
-                                                return this.latlng;
-                                            };
-
-                                            var markers = []
-
-                                            const marker = new CustomMarkerShare(
-                                                myLatlng,
-                                                map,
-                                                { marker_id: `${key}` },
-                                                "https://img.icons8.com/ios-glyphs/30/000000/car-cleaning.png"
-                                            )
-
-                                            // markers.push(marker)
-                                            // console.log(markers);
-                                            
-
-                                            var pos = {
-                                                lat: share.location.routes[0].legs[0].start_location.lat,
-                                                lng: share.location.routes[0].legs[0].start_location.lng
-                                            };
-
-                                            marker.latlng = { lat: pos.lat, lng: pos.lng };
-
-                                            marker.draw();
+                                        let myLatlng = new google.maps.LatLng(data[key].location.routes[0].legs[0].start_location.lat, data[key].location.routes[0].legs[0].start_location.lng);
 
 
-                                            map.setCenter(pos);
+                                        const marker = new CustomMarker(
+                                            myLatlng,
+                                            map,
+                                            { marker_id: `${key}` },
+                                            "https://img.icons8.com/ios-glyphs/30/000000/car-cleaning.png"
+                                        )
 
-                                            const content = `
+
+                                        var pos = {
+                                            lat: data[key].location.routes[0].legs[0].start_location.lat,
+                                            lng: data[key].location.routes[0].legs[0].start_location.lng
+                                        };
+
+                                        marker.latlng = { lat: pos.lat, lng: pos.lng };
+
+                                        marker.draw();
+
+
+                                        map.setCenter(pos);
+
+                                        const content = `
                                             <center>
                                             <h2>ข้อมูลการแชร์</h2>
                                             </center>
                                             <hr></hr>
-                                            <u style="font-size: 15px">ต้นทาง:</u></<u><b> ${share.location.routes[0].legs[0].start_address} </b>
+                                            <u style="font-size: 15px">ต้นทาง: </u><u>${data[key].location.routes[0].legs[0].start_address}</u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ปลายทาง:</u></<u><b>  ${share.location.routes[0].legs[0].end_address} </b>
+                                            <u style="font-size: 15px">ปลายทาง: </u><u>${data[key].location.routes[0].legs[0].end_address}</u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">เริ่มแชร์เมื่อ:</u></<u><b> ${share.date.start_time.value} </b>
+                                            <u style="font-size: 15px">เริ่มแชร์เมื่อ: </u><u>${data[key].date.start_time.value}</<u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ปิดแชร์เวลา:</u></<u><b> ${share.date.end_time.value} </b>
+                                            <u style="font-size: 15px">ปิดแชร์เวลา: </u><u>${data[key].date.end_time.value}</<u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ต้องการผู้เดินทางเพิ่ม:</u></<u><b> ${share.member !== null ? Object.keys(share.member).length : 0} / ${share.max_number.value} คน </b>
+                                            <u style="font-size: 15px">ต้องการผู้เดินทางเพิ่ม: </u><u>${Object.keys(data[key].member).length - 1} </<u><b>/ ${data[key].max_number.value} คน </b>
                                             <br></br>
-                                            <u style="font-size: 15px">เดินทางกับเพศ:</u></<u><b> ${share.sex.value} </b>
+                                            <u style="font-size: 15px">เดินทางกับเพศ: </u><u>${data[key].sex.value}</<u><b> </b>
                                             <hr></hr>
                                             <center><button style="background-color: #ffffff;
                                             font-size: 17px;
@@ -380,83 +319,88 @@ const UserStatus = (props) => {
                                             box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12);
                                             }" id="join-share-${key}" >เข้าร่วม</button></center>`
 
-                                            const infowindow = new google.maps.InfoWindow({
-                                                content: '',
-                                                maxWidth: 500
-                                            });
+                                        const infowindow = new google.maps.InfoWindow({
+                                            content: '',
+                                            maxWidth: 500
+                                        });
+
+                                        console.log(data[key]);
+
+                                        const member_length = Object.keys(data[key].member).length
+                                        const max_number_value = data[key].max_number.value
+
+                                        marker.addListener('click', function (key) {
+
+                                            infowindow.setContent(content)
+                                            infowindow.open(map, marker);
 
 
-                                            marker.addListener('click', function (key) {
+                                            if (member_length > max_number_value) {
+                                                $(`#join-share-${key}`).attr("disabled", true)
+                                            }
 
-                                                infowindow.setContent(content)
-                                                infowindow.open(map, marker);
+                                        });
 
-                                                if (Object.keys(share.member).length > share.max_number.value) {
-                                                    $(`#join-share-${key}`).attr("disabled", true)
+                                        $(document).on('click', `#join-share-${key}`, function () {
+                                            get.status.member(props.uid).then(function (member_status) {
+                                                if (member_status.value !== "true") {
+                                                    get.users.profile(props.uid).then(function (profile) {
+                                                        post.share.member(key, { [member_status.uid]: { id: member_status.uid, profile: profile } }, dateTime)
+
+                                                        post.status.member(
+                                                            member_status.uid,
+                                                            {
+                                                                share_id: key,
+                                                                uid: member_status.uid,
+                                                                value: "true"
+                                                            },
+                                                            dateTime
+                                                        );
+
+                                                        post.status.alert(
+                                                            member_status.uid,
+                                                            {
+                                                                share_id: key,
+                                                                uid: member_status.uid,
+                                                                value: "false"
+                                                            },
+                                                            dateTime
+                                                        );
+
+                                                        post.status.owner(
+                                                            member_status.uid,
+                                                            {
+                                                                share_id: key,
+                                                                uid: member_status.uid,
+                                                                value: "false"
+                                                            },
+                                                            dateTime
+                                                        );
+
+                                                        post.status.process(
+                                                            member_status.uid,
+                                                            {
+                                                                share_id: key,
+                                                                uid: member_status.uid,
+                                                                value: "false"
+                                                            },
+                                                            dateTime
+                                                        );
+
+                                                        post.status.share(
+                                                            member_status.uid,
+                                                            {
+                                                                id: key,
+                                                                uid: member_status.uid,
+                                                                value: "false"
+                                                            },
+                                                            dateTime
+                                                        );
+                                                    })
                                                 }
-                                            });
-
-                                            $(document).on('click', `#join-share-${key}`, function () {
-                                                get.status.member(props.uid).then(function (member_status) {
-                                                    if (member_status.value !== "true") {
-                                                        get.users.profile(props.uid).then(function (profile) {
-                                                            post.share.member(key, { [member_status.uid]: { id: member_status.uid, profile: profile } }, dateTime)
-
-                                                            post.status.member(
-                                                                member_status.uid,
-                                                                {
-                                                                    share_id: key,
-                                                                    uid: member_status.uid,
-                                                                    value: "true"
-                                                                },
-                                                                dateTime
-                                                            );
-
-                                                            post.status.alert(
-                                                                member_status.uid,
-                                                                {
-                                                                    share_id: key,
-                                                                    uid: member_status.uid,
-                                                                    value: "false"
-                                                                },
-                                                                dateTime
-                                                            );
-
-                                                            post.status.owner(
-                                                                member_status.uid,
-                                                                {
-                                                                    share_id: key,
-                                                                    uid: member_status.uid,
-                                                                    value: "false"
-                                                                },
-                                                                dateTime
-                                                            );
-
-                                                            post.status.process(
-                                                                member_status.uid,
-                                                                {
-                                                                    share_id: key,
-                                                                    uid: member_status.uid,
-                                                                    value: "false"
-                                                                },
-                                                                dateTime
-                                                            );
-
-                                                            post.status.share(
-                                                                member_status.uid,
-                                                                {
-                                                                    id: key,
-                                                                    uid: member_status.uid,
-                                                                    value: "false"
-                                                                },
-                                                                dateTime
-                                                            );
-                                                        })
-                                                    }
-                                                })
                                             })
-
                                         })
+
                                     }
                                 })
                             })
@@ -472,11 +416,12 @@ const UserStatus = (props) => {
                         />
                     </SearchBar>
                     <VisibilityButton open={openVisibility} on={onVisibility.bind(this)} off={offVisibility.bind(this)} />
-                    <Button onClick={onCreateShare.bind(this)} variant="contained" style={{ backgroundColor: '#ffffff' }} className={props.classes.fab}>
-                        <AddIcon color="action" fontSize="large" />
-                    </Button>
+                    <Link to="/share_location">
+                        <Button onClick={onCreateShare.bind(this)} variant="contained" style={{ backgroundColor: '#ffffff' }} className={props.classes.fab}>
+                            <AddIcon color="action" fontSize="large" />
+                        </Button>
+                    </Link>
                 </Map>
-                <OpenCreateShare open={openCreateShare} onClose={offCreateShare.bind(this)} />
                 <MenuSlide open={openMenuSlide} onClose={offMenuSlide.bind(this)} uid={props.uid} />
             </StyleBaseLine>
         </Fragment>

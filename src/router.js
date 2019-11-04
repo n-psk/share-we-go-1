@@ -37,13 +37,5 @@ export const routerPrivate = [
     {
         path: "/share_location",
         page: () => (<ShareLocation />)
-    },
-    {
-        path: "/doc_taxi",
-        page: () => (<DocTaxi />)
-    },
-    {
-        path: "/history",
-        page: () => (<History />)
     }
 ]
