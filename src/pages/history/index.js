@@ -1,29 +1,30 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
+import {withRouter} from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 // import Router from 'next/router';
 import IconButton from '@material-ui/core/IconButton';
 import HistoryBar from './components/HistoryBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+// import AppBar from '@material-ui/core/AppBar';
+// import Toolbar from '@material-ui/core/Toolbar';
+// import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+// import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import firebase from '../../connect/firebase';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import RecentActorsIcon from '@material-ui/icons/RecentActors';
+// import firebase from '../../connect/firebase';
+// import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+// import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import CommuteIcon from '@material-ui/icons/Commute';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
+// import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import WcIcon from '@material-ui/icons/Wc';
 
 
 
-export default class History extends React.Component {
+class History extends React.Component {
 
     state = {
         keys: [{ test: 'test' }, { test: 'test' }],
@@ -85,7 +86,7 @@ export default class History extends React.Component {
 
                 {/* app-bar */}
                 <HistoryBar>
-                    <IconButton style={{ position: "absolute", left: 0 }}>
+                    <IconButton onClick={this.props.history.goBack} style={{ position: "absolute", left: 0 }} >
                         <ChevronLeftIcon fontSize="large" />
                     </IconButton>
                     <div
@@ -186,3 +187,5 @@ export default class History extends React.Component {
         );
     }
 }
+
+export default withRouter(History)

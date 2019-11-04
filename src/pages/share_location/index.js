@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // import Router from 'next/router';
-import clsx from 'clsx';
+// import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 // import { ThemeProvider, withStyles } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,14 +12,14 @@ import StepButton from '@material-ui/core/StepButton';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types'
-import { createMuiTheme } from '@material-ui/core/styles';
+// import { createMuiTheme } from '@material-ui/core/styles';
 import ShareLocationBar from './components/ShareLocationBar';
 import PlaceAutocompleteAndDirections from './components/PlaceAutocompleteAndDirections';
 import CustomDateTimePicker from './components/CustomDateTimePicker';
 import TravelCompanion from './components/TravelCompanion';
 // import geno from '../image/geno.svg'
 import Selectgender from './components/Selectgender';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import CommuteIcon from '@material-ui/icons/Commute';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
@@ -28,6 +28,7 @@ import firebase from '../../connect/firebase';
 import { post, get } from '../../RESTful_API';
 import { dateTime } from '../../module';
 import { setDate } from 'date-fns';
+import AlertCheck from './components/AlertCheck';
 
 
 require('es6-promise').polyfill();
@@ -148,6 +149,12 @@ function ShareLocation(props) {
     const [sex, setSex] = useState(new Set());
     const [max_number, setMaxNumber] = useState(new Set());
     const [date, setDate] = useState(new Set());
+    const [user, setUser] = useState(new Set());
+    const [open, setOpen] = useState(false);
+
+    firebase.auth().onAuthStateChanged((user) => {
+        setUser(user)
+    })
 
     const steps = getSteps();
 
@@ -211,39 +218,43 @@ function ShareLocation(props) {
         setActiveStep(step);
     };
 
+
+
     function handleComplete() {
         const newCompleted = new Set(completed);
         newCompleted.add(activeStep);
         setCompleted(newCompleted);
         console.log(activeStep);
 
+
+        if (activeStep === 0) {
+            get.share.location(user.uid).then(function (data) {
+                setLocation({
+                    start_address: data.routes[0].legs[0].start_address,
+                    end_address: data.routes[0].legs[0].end_address
+                })
+            });
+        }
+        if (activeStep === 1) {
+            get.share.date(user.uid).then(function (data) {
+                setDate({
+                    end_time: data.end_time.value,
+                    start_time: data.start_time.value
+                })
+            });
+        }
+
+        if (activeStep === 2) {
+            get.share.max_number(user.uid).then(function (data) {
+                setMaxNumber({ value: data.value })
+            });
+        }
+
         if (activeStep === 3) {
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
+            get.share.sex(user.uid).then(function (data) {
+                setSex({ value: data.value })
+            });
 
-                    get.share.location(user.uid).then(function (data) {
-                        setLocation({
-                            start_address: data.routes[0].legs[0].start_address,
-                            end_address: data.routes[0].legs[0].end_address
-                        })
-                    });
-
-                    get.share.date(user.uid).then(function (data) {
-                        setDate({
-                            end_time: data.end_time.value,
-                            start_time: data.start_time.value
-                        })
-                    });
-
-                    get.share.max_number(user.uid).then(function (data) {
-                        setMaxNumber({ value: data.value })
-                    });
-
-                    get.share.sex(user.uid).then(function (data) {
-                        setSex({ value: data.value })
-                    });
-                }
-            })
         }
 
 
@@ -257,10 +268,15 @@ function ShareLocation(props) {
         }
     }
 
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     function handleReset() {
-        setActiveStep(0);
-        setCompleted(new Set());
-        setSkipped(new Set());
+        // setActiveStep(0);
+        // setCompleted(new Set());
+        // setSkipped(new Set());
         firebase.auth().onAuthStateChanged((user) => {
             post.status.share(user.uid, { value: "true", uid: user.uid, id: user.uid }, dateTime)
             post.status.owner(user.uid, { value: "true", uid: user.uid, share_id: user.uid }, dateTime)
@@ -271,10 +287,12 @@ function ShareLocation(props) {
             get.users.profile(user.uid).then(function (data) {
 
                 post.share.owner(user.uid, { id: user.uid, profile: data }, dateTime)
-                post.share.number(user.uid, { share_id: user.uid, uid: user.uid }, dateTime)
 
+                post.share.member(user.uid, { share_id: user.uid, uid: user.uid, profile: data }, dateTime)
             })
         })
+        setOpen(true)
+        //    props.history.goBack()
     }
 
     function isStepSkipped(step) {
@@ -286,7 +304,7 @@ function ShareLocation(props) {
     }
 
     function handleGoBackPage() {
-        // Router.back()
+        props.history.goBack();
     }
 
     function goBack() {
@@ -302,7 +320,7 @@ function ShareLocation(props) {
     return (
         <div className={classes.root}>
             <ShareLocationBar>
-                <Button onClick={props.onClose}>
+                <Button onClick={goBack}>
                     <IconButton aria-label="Back" >
                         <ArrowBackIosIcon />
                     </IconButton>
@@ -379,9 +397,10 @@ function ShareLocation(props) {
                             width: '-webkit-fill-available'
                         }}>
                             <center >
-                                    <Button variant="contained" onClick={props.onClose} color="primary" >เปิดแชร์</Button>
+                                <Button variant="contained" onClick={handleReset} color="primary" >เปิดแชร์</Button>
                             </center>
                         </div>
+                        <AlertCheck open={open} onClose={handleClose} />
                     </div>
                 ) : (
                         <div>
@@ -429,8 +448,8 @@ function ShareLocation(props) {
 }
 
 ShareLocation.propTypes = {
-   onClose: PropTypes.func,
-   map: PropTypes.object
+    onClose: PropTypes.func,
+    map: PropTypes.object
 };
 
-export default ShareLocation;
+export default withRouter(ShareLocation);

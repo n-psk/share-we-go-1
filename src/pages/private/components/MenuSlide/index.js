@@ -118,10 +118,10 @@ function MenuSlide(props) {
                         <List style={{
                             marginTop: '15px'
                         }}>
-                            {/* <Link to={`/profile/${props.uid}`} style={{
+                            <Link to={`/profile/${props.uid}`} style={{
                                 color: 'dimgray',
                                 textDecoration: 'blink'
-                            }}> */}
+                            }}>
                                 <ListItem button key={0}>
                                     <ListItemIcon style={{
                                         minWidth: 0,
@@ -130,11 +130,11 @@ function MenuSlide(props) {
                                     }}> <AccountBoxIcon fontSize="large" /></ListItemIcon>
                                     <ListItemText ><span style={{ fontSize: "large" }} >Profile</span></ListItemText>
                                 </ListItem>
-                            {/* </Link> */}
-                            {/* <Link to="/history" style={{
+                            </Link>
+                            <Link to="/history" style={{
                                 color: 'dimgray',
                                 textDecoration: 'blink'
-                            }}> */}
+                            }}>
                                 <ListItem button key={1}>
                                     <ListItemIcon style={{
                                         minWidth: 0,
@@ -143,7 +143,7 @@ function MenuSlide(props) {
                                     }}> <HistoryIcon fontSize="large" /></ListItemIcon>
                                     <ListItemText > <span style={{ fontSize: "large" }} >History</span></ListItemText>
                                 </ListItem>
-                            {/* </Link> */}
+                            </Link>
                         </List>
                         <div style={{
                             position: "absolute",

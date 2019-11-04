@@ -15,12 +15,14 @@ class Private extends React.Component {
         const me = this
 
         firebase.auth().onAuthStateChanged((user) => {
-            me.updateAuth(user)
-            setInterval(() => {
-                get.status.id(this.state.auth.uid).then(function (data) {
-                    me.updateStatus(data)
-                })
-            }, 3000)
+            if (user) {
+                me.updateAuth(user)
+                setInterval(() => {
+                    get.status.id(this.state.auth.uid).then(function (data) {
+                        me.updateStatus(data)
+                    })
+                }, 3000)
+            }
         }
         )
     }
@@ -40,10 +42,10 @@ class Private extends React.Component {
                 {this.state.status !== null
                     ? (<Fragment>
                         {this.state.status.owner.value !== "false"
-                            ? <OwnerStatus {...this.state} />
+                            ? <OwnerStatus uid={this.state.auth.uid} {...this.state} />
                             : (<Fragment>
                                 {this.state.status.member.value !== "false"
-                                    ? <MemberStatus />
+                                    ? <MemberStatus uid={this.state.auth.uid} {...this.state} />
                                     : <UserStatus uid={this.state.auth.uid} {...this.state} />
                                 }
                             </Fragment>)

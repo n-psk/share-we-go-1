@@ -16,7 +16,7 @@ import lightBlue from "@material-ui/core/colors/lightBlue";
 import { createMuiTheme } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 // import {dateTime} from '../../../../module'
-
+// import './styles/index.css';
 
 const materialTheme = createMuiTheme({
   overrides: {
@@ -57,6 +57,7 @@ const materialTheme = createMuiTheme({
 export default function CustomDateTimePicker() {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [open, setOpen] = React.useState(true)
 
   // const socket = io(`http://localhost:8080/`);
 
@@ -106,15 +107,22 @@ export default function CustomDateTimePicker() {
     })
   }
 
+  function updateOpen() {
+    setOpen(false)
+  }
+
   var h_max = window.innerHeight
   var h = h_max / 2
 
   return (
     <div style={{ marginTop: h }}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid container justify="space-around">
+      <MuiPickersUtilsProvider utils={DateFnsUtils} >
+        <Grid 
+          container justify="space-around">
           <ThemeProvider theme={materialTheme}>
             <KeyboardDateTimePicker
+              open={open}
+              onAccept={updateOpen}
               allowKeyboardControl={false}
               value={selectedDate}
               onChange={handleDateChange}

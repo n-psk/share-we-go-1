@@ -15,7 +15,7 @@ class App extends Component {
     super(props)
     this.state = {
       loading: true,
-      auth: null,
+      auth: false,
     }
 
     // const me = this
@@ -51,7 +51,7 @@ class App extends Component {
   onAuth(user) {
     if (user) {
       // console.log(user);
-      this.setState({ auth: user })
+      this.setState({ auth: true })
       post.users.user(user.uid, user, dateTime)
 
       if (navigator.geolocation) {
