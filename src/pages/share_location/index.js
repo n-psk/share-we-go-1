@@ -288,7 +288,7 @@ function ShareLocation(props) {
 
                 post.share.owner(user.uid, { id: user.uid, profile: data }, dateTime)
 
-                post.share.member(user.uid, { share_id: user.uid, uid: user.uid, profile: data }, dateTime)
+                post.share.member(user.uid, { [user.uid]:{share_id: user.uid, uid: user.uid, profile: data} }, dateTime)
             })
         })
         setOpen(true)

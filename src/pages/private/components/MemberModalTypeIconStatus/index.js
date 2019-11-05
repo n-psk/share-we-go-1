@@ -29,7 +29,7 @@ const MemberTypeIconStatus = (props) => {
             }} >
                 <Avatar
                     alt="Remy Sharp"
-                    src={share !== null ? share.owner.profile.photoURL : null}
+                    src={props.share !== null ? props.share.owner.profile.photoURL : null}
                     className={props.classes.mediumAvatar}
                     style={{
                         border: '4px solid #fff',
@@ -38,10 +38,12 @@ const MemberTypeIconStatus = (props) => {
                 />
                 {props.share !== null
                     ? (<React.Fragment>
-                        {props.share.member !== null
+                        {props.share.member !== undefined
                             ? (<React.Fragment>
                                 {Object.keys(props.share.member).map((key) => (
-                                    <Avatar
+                                    <React.Fragment>
+                                    {key !== props.share.owner.id 
+                                    ?(<Avatar
                                         alt="Remy Sharp"
                                         src={props.share.member[key].profile.photoURL}
                                         className={props.classes.mediumAvatar}
@@ -49,7 +51,10 @@ const MemberTypeIconStatus = (props) => {
                                             border: '4px solid #fff',
                                             boxShadow: '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)'
                                         }}
-                                    />
+                                    />)
+                                    :(<React.Fragment></React.Fragment>)
+                                    }
+                                    </React.Fragment>
                                 ))}
 
                             </React.Fragment>)

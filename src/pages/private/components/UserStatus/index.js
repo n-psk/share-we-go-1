@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import ConnectApiMaps, { Map } from 'maps-google-react';
 import $ from 'jquery';
@@ -70,7 +70,8 @@ const UserStatus = (props) => {
     const joinLocation = (key, uid, data) => {
         post.share.member(key, {
             [uid]: {
-                id: `${uid}`,
+                uid: `${uid}`,
+                share_id: `${key}`,
                 profile: data
             }
         },
@@ -345,57 +346,58 @@ const UserStatus = (props) => {
                                             get.status.member(props.uid).then(function (member_status) {
                                                 if (member_status.value !== "true") {
                                                     get.users.profile(props.uid).then(function (profile) {
-                                                        post.share.member(key, { [member_status.uid]: { id: member_status.uid, profile: profile } }, dateTime)
+                                                        joinLocation(key, props.uid, profile)
+                                                        // post.share.member(key, { [member_status.uid]: { id: member_status.uid, profile: profile } }, dateTime)
 
-                                                        post.status.member(
-                                                            member_status.uid,
-                                                            {
-                                                                share_id: key,
-                                                                uid: member_status.uid,
-                                                                value: "true"
-                                                            },
-                                                            dateTime
-                                                        );
+                                                        // post.status.member(
+                                                        //     member_status.uid,
+                                                        //     {
+                                                        //         share_id: key,
+                                                        //         uid: member_status.uid,
+                                                        //         value: "true"
+                                                        //     },
+                                                        //     dateTime
+                                                        // );
 
-                                                        post.status.alert(
-                                                            member_status.uid,
-                                                            {
-                                                                share_id: key,
-                                                                uid: member_status.uid,
-                                                                value: "false"
-                                                            },
-                                                            dateTime
-                                                        );
+                                                        // post.status.alert(
+                                                        //     member_status.uid,
+                                                        //     {
+                                                        //         share_id: key,
+                                                        //         uid: member_status.uid,
+                                                        //         value: "false"
+                                                        //     },
+                                                        //     dateTime
+                                                        // );
 
-                                                        post.status.owner(
-                                                            member_status.uid,
-                                                            {
-                                                                share_id: key,
-                                                                uid: member_status.uid,
-                                                                value: "false"
-                                                            },
-                                                            dateTime
-                                                        );
+                                                        // post.status.owner(
+                                                        //     member_status.uid,
+                                                        //     {
+                                                        //         share_id: key,
+                                                        //         uid: member_status.uid,
+                                                        //         value: "false"
+                                                        //     },
+                                                        //     dateTime
+                                                        // );
 
-                                                        post.status.process(
-                                                            member_status.uid,
-                                                            {
-                                                                share_id: key,
-                                                                uid: member_status.uid,
-                                                                value: "false"
-                                                            },
-                                                            dateTime
-                                                        );
+                                                        // post.status.process(
+                                                        //     member_status.uid,
+                                                        //     {
+                                                        //         share_id: key,
+                                                        //         uid: member_status.uid,
+                                                        //         value: "false"
+                                                        //     },
+                                                        //     dateTime
+                                                        // );
 
-                                                        post.status.share(
-                                                            member_status.uid,
-                                                            {
-                                                                id: key,
-                                                                uid: member_status.uid,
-                                                                value: "false"
-                                                            },
-                                                            dateTime
-                                                        );
+                                                        // post.status.share(
+                                                        //     member_status.uid,
+                                                        //     {
+                                                        //         id: key,
+                                                        //         uid: member_status.uid,
+                                                        //         value: "false"
+                                                        //     },
+                                                        //     dateTime
+                                                        // );
                                                     })
                                                 }
                                             })
