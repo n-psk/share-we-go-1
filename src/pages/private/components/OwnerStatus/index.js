@@ -8,11 +8,13 @@ import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import LocalTaxiIcon from '@material-ui/icons/LocalTaxi';
 import { withRouter } from 'react-router-dom'
 
 import { StyleBaseLine } from '../../../../components/StyleBaseLine';
+import ModelExitShare from './components/ModelExitShare'
 // import { CustomMarker } from '../../../../components/CustomMarker';
 // import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
@@ -31,6 +33,8 @@ const OwnerStatus = (props) => {
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openCallTaxi, setOpenCallTaxi] = useState(false)
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
+    const [openModelExitShare, setOpenModelExitShare] = useState(false)
+
 
 
 
@@ -61,6 +65,16 @@ const OwnerStatus = (props) => {
     const startShareGroup = () => {
         props.history.push('doc_taxi')
     }
+
+    const exitShareGroup = () => {
+        setOpenModelExitShare(true)
+    }
+
+    const offModelExitShare = () => {
+        setOpenModelExitShare(false)
+
+    }
+
 
 
     const latlng = {
@@ -286,9 +300,34 @@ const OwnerStatus = (props) => {
                             open={openCallTaxi}
                             onClose={offCallTaxi} />
                     </Grid>
-                    <Button variant="contained" onClick={startShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
-                        เริ่มการเดินทาง
+                    {props.status.alert.value !== "true"
+                        ? (<Fragment>
+                            <Grid container style={{
+                                width: 'min-content',
+                                position: 'absolute',
+                                left: '15px',
+                                bottom: '80px',
+
+                            }} >
+                                <Fab size="medium" onClick={exitShareGroup} aria-label="exit-share" className={classes.buttonExitShare}>
+                                    <MeetingRoomIcon />
+                                </Fab>
+                            </Grid>
+                            <Button variant="contained" onClick={startShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
+                                เริ่มการเดินทาง
                         </Button>
+                        </Fragment>)
+                        : (<Fragment>
+                            <Button variant="contained" onClick={exitShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
+                                สิ้นสุดการเดินทาง
+                        </Button>
+                        </Fragment>)}
+                    <ModelExitShare
+                        uid={props.uid}
+                        share_id={props.status.owner.uid}
+                        share={share}
+                        open={openModelExitShare}
+                        onClose={offModelExitShare} />
                 </Map>
                 <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} />
                 <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.uid} />

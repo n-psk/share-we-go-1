@@ -22,6 +22,7 @@ import KeyDataTaxiCar from '../KeyDataTaxiCar';
 import SearchBar from '../SearchBar';
 import SearchMap from '../SearchMap';
 import MenuSlide from '../MenuSlide';
+import ModelExitShare from './components/ModelExitShare';
 
 
 const MemberStatus = (props) => {
@@ -30,6 +31,7 @@ const MemberStatus = (props) => {
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openKeyDataTaxiCar, setOpenKeyDataTaxiCar] = useState(false);
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
+    const [openModelExitShare, setOpenModelExitShare] = useState(false)
     const [alertShare, setAlertShare] = useState({})
     const [map, setMap] = useState(null);
 
@@ -73,6 +75,11 @@ const MemberStatus = (props) => {
     }
 
     const exitShareGroup = () => {
+        setOpenModelExitShare(true)
+    }
+
+    const offModelExitShare = () => {
+        setOpenModelExitShare(false)
 
     }
 
@@ -298,6 +305,13 @@ const MemberStatus = (props) => {
                     <Button variant="contained" onClick={exitShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
                         ออกจากกลุ่ม
                         </Button>
+                    <ModelExitShare
+                        uid={props.uid}
+                        share_id={props.status.member.share_id}
+                        share={share}
+                        open={openModelExitShare}
+                        onClose={offModelExitShare} />
+
                 </Map>
                 <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} share={share} />
                 <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.uid} />
@@ -331,8 +345,7 @@ const styles = {
 
 MemberStatus.propTypes = {
     uid: PropTypes.string,
-    share_id: PropTypes.string,
-    uid: PropTypes.string
+    share_id: PropTypes.string
 }
 
 export default ConnectApiMaps({

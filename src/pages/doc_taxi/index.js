@@ -26,7 +26,7 @@ class DocTaxi extends React.Component {
         super(props)
 
         this.state = {
-            select: 'y',
+            select: 'เหลือง',
             license_plate: ""
         }
 
@@ -130,18 +130,18 @@ class DocTaxi extends React.Component {
                                         name="age"
                                     />}
                                 >
-                                    <MenuItem value="y">
+                                    <MenuItem value="เหลือง">
                                         <em>เหลือง</em>
                                     </MenuItem>
-                                    <MenuItem value="g">เขียว</MenuItem>
-                                    <MenuItem value="p">ชมพู</MenuItem>
-                                    <MenuItem value="b">ฟ้า</MenuItem>
-                                    <MenuItem value="r">แดง</MenuItem>
-                                    <MenuItem value="o">ส้ม</MenuItem>
-                                    <MenuItem value="y_g">เหลือง/เขียว</MenuItem>
-                                    <MenuItem value="y_r">เหลือง/แดง</MenuItem>
-                                    <MenuItem value="y_o">เหลือง/ส้ม</MenuItem>
-                                    <MenuItem value="b_r">ฟ้า/แดง</MenuItem>
+                                    <MenuItem value="เขียว">เขียว</MenuItem>
+                                    <MenuItem value="ชมพู">ชมพู</MenuItem>
+                                    <MenuItem value="ฟ้า">ฟ้า</MenuItem>
+                                    <MenuItem value="แดง">แดง</MenuItem>
+                                    <MenuItem value="ส้ม">ส้ม</MenuItem>
+                                    <MenuItem value="เหลือง/เขียว">เหลือง/เขียว</MenuItem>
+                                    <MenuItem value="เหลือง/แดง">เหลือง/แดง</MenuItem>
+                                    <MenuItem value="เหลือง/ส้ม">เหลือง/ส้ม</MenuItem>
+                                    <MenuItem value="ฟ้า/แดง">ฟ้า/แดง</MenuItem>
                                 </Select>
                             </FormControl>
                         </center>

@@ -707,11 +707,80 @@ export const get = {
                 )
             }
         }
+    },
+    history: {
+        id: function (id) {
+
+            return fetch(`http://localhost:5000/share-we-go-project/us-central1/api/history/${id}`).then(
+                function (res) {
+                    return res.json();
+                }
+            )
+        },
     }
 }
 
 export const d = {
     share: {
+        id: function (id,uid, date) {
+            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/share/${id}/member`, {
+                method: 'delete',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/status/${uid}/member`, {
+                mode: 'no-cors',
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    share_id: "",
+                    uid: id,
+                    value: "false"
+                })
+            });
+
+            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/status/${uid}/owner`, {
+                mode: 'no-cors',
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    share_id: "",
+                    uid: id,
+                    value: "false"
+                })
+            });
+
+            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/status/${uid}/_log/owner`, {
+                mode: 'no-cors',
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    owner: {
+                        share_id: "",
+                        uid: id,
+                        value: "false"
+                    },
+                    date: date
+                })
+            });
+
+            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/status/${uid}/_log/member`, {
+                mode: 'no-cors',
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    owner: {
+                        share_id: "",
+                        uid: id,
+                        value: "false"
+                    },
+                    date: date
+                })
+            });
+
+            // window.location.reload();
+
+        },
         member: function (id, uid, date) {
             fetch(`http://localhost:5000/share-we-go-project/us-central1/api/share/${id}/member/${uid}`, {
                 method: 'delete',
