@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import LocalTaxiIcon from '@material-ui/icons/LocalTaxi';
-
+import { withRouter } from 'react-router-dom'
 
 import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 // import { CustomMarker } from '../../../../components/CustomMarker';
@@ -31,6 +31,7 @@ const OwnerStatus = (props) => {
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openCallTaxi, setOpenCallTaxi] = useState(false)
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
+
 
 
     const onChatSlide = () => {
@@ -57,8 +58,8 @@ const OwnerStatus = (props) => {
         setOpenMenuSlide(false)
     }
 
-    const exitShareGroup = () => {
-
+    const startShareGroup = () => {
+        props.history.push('doc_taxi')
     }
 
 
@@ -285,8 +286,8 @@ const OwnerStatus = (props) => {
                             open={openCallTaxi}
                             onClose={offCallTaxi} />
                     </Grid>
-                    <Button variant="contained" onClick={exitShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
-                        ออกจากกลุ่ม
+                    <Button variant="contained" onClick={startShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
+                        เริ่มการเดินทาง
                         </Button>
                 </Map>
                 <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} />
@@ -326,4 +327,4 @@ OwnerStatus.propTypes = {
 export default ConnectApiMaps({
     apiKey: "AIzaSyBy2VY1e11qs-60Ul6aYT5klWYRI1K3RB0",
     libraries: ['places', 'geometry'],
-})(withStyles(styles)(OwnerStatus))
+})(withStyles(styles)(withRouter(OwnerStatus)))

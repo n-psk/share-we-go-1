@@ -2,7 +2,7 @@ import React from 'react';
 import Login from './pages/login';
 import Private from './pages/private';
 import Profile from './pages/profile';
-// import DocTaxi from './pages/doc_taxi';
+import DocTaxi from './pages/doc_taxi';
 import ShareLocation from './pages/share_location';
 import History from './pages/history';
 
@@ -41,5 +41,9 @@ export const routerPrivate = [
     {
         path: "/history",
         page: () => (<History />)
+    },
+    {
+        path: "/doc_taxi",
+        page: () => (<DocTaxi />)
     }
 ]

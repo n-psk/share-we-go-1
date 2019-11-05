@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 // import Personalform from "../components/personalInformation";
 import Button from '@material-ui/core/Button';
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import firebase from "../../connect/firebase";
 // import { getProfile, postProfile } from '../../RESTful_API';
 import FormControl from '@material-ui/core/FormControl';
@@ -58,18 +58,22 @@ class DocTaxi extends React.Component {
 
 
     onSend() {
-        let data = {
-            displayName: this.state.displayName,
-            email: this.state.email,
-            photoURL: this.state.photoURL,
-            phoneNumber: this.state.phoneNumber,
-            sex: this.state.sex,
-            age: this.state.age
-        }
+
 
         firebase.auth().onAuthStateChanged((user) => {
 
-            // postDocTaxi(user.uid, data)
+            post.share.alert(user.uid, {
+                uid: `${user.uid}`,
+                sahre_id: `${user.uid}`,
+                select: `${this.state.select}`,
+                license_plate: `${this.state.license_plate}`
+            }, dateTime)
+
+            post.state.alert(user.uid, {
+                uid: `${user.uid}`,
+                sahre_id: `${user.uid}`,
+                value: 'true'
+            }, dateTime)
         })
     }
 
@@ -139,9 +143,8 @@ class DocTaxi extends React.Component {
                         </center>
                     </Grid>
                 </div>
-                <Link to="/">
-                    <Button variant="contained" style={{ backgroundColor: 'rgb(210, 210, 210)' }} className={classes.fab}>บันทึก</Button>
-                </Link>
+                <Button onClick={this.onSend.bind(this)} variant="contained" style={{ backgroundColor: 'rgb(210, 210, 210)' }} className={classes.fab}>บันทึก</Button>
+
             </React.Fragment>
 
         );
@@ -192,4 +195,4 @@ const styles = {
     },
 }
 
-export default withStyles(styles)(DocTaxi);
+export default withStyles(styles)(withRouter(DocTaxi));
