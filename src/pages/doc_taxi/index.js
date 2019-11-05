@@ -12,12 +12,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import { Link, withRouter } from "react-router-dom";
 import firebase from "../../connect/firebase";
-// import { getProfile, postProfile } from '../../RESTful_API';
+import { post } from '../../RESTful_API';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import DocTaxiBar from './components/DocTaxiBar';
+import { dateTime } from '../../module';
 
 class DocTaxi extends React.Component {
 
@@ -67,11 +68,12 @@ class DocTaxi extends React.Component {
                 sahre_id: `${user.uid}`,
                 select: `${this.state.select}`,
                 license_plate: `${this.state.license_plate}`
+
             }, dateTime)
 
-            post.state.alert(user.uid, {
+            post.status.alert(user.uid, {
                 uid: `${user.uid}`,
-                sahre_id: `${user.uid}`,
+                share_id: `${user.uid}`,
                 value: 'true'
             }, dateTime)
         })
@@ -88,7 +90,7 @@ class DocTaxi extends React.Component {
 
                 <div className={classes.drawerHeader}>
                     <DocTaxiBar>
-                        <IconButton style={{ position: "absolute", left: 0 }}>
+                        <IconButton onClick={this.props.history.goBack} style={{ position: "absolute", left: 0 }}>
                             <ChevronLeftIcon fontSize="large" />
                         </IconButton>
                         <div
@@ -110,6 +112,8 @@ class DocTaxi extends React.Component {
                             <h1>ทะเบียนรถ</h1>
                             <Paper className={classes.root}>
                                 <InputBase
+                                    value={this.state.license_plate}
+                                    onChange={this.InputUpdate.bind(this)}
                                     className={classes.input}
                                     placeholder="กรอกทะเบียนรถ"
                                     inputProps={{ 'aria-label': 'กรอกทะเบียนรถ' }}

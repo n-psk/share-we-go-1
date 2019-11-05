@@ -29,7 +29,8 @@ const MemberStatus = (props) => {
     const [share, setShare] = useState(null);
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openKeyDataTaxiCar, setOpenKeyDataTaxiCar] = useState(false);
-    const [openMenuSlide,setOpenMenuSlide] = useState(false)
+    const [openMenuSlide, setOpenMenuSlide] = useState(false)
+    const [alertShare, setAlertShare] = useState({})
     const [map, setMap] = useState(null);
 
     const onChatSlide = () => {
@@ -41,6 +42,21 @@ const MemberStatus = (props) => {
     }
 
     const onKeyDataTaxiCar = () => {
+        get.status.alert(props.status.member.share_id).then((data) => {
+            if (data.value !== 'false') {
+                get.share.alert(data.share_id).then((alert_share) => {
+                    setAlertShare(alert_share)
+                })
+            } else {
+                setAlertShare({
+                    uid: `${data.uid}`,
+                    share_id: `${data.share_id}`,
+                    select: 'กำลังรอข้อมูล',
+                    license_plate: 'กำลังรอข้อมูล'
+
+                })
+            }
+        })
         setOpenKeyDataTaxiCar(true)
     }
 
@@ -277,7 +293,7 @@ const MemberStatus = (props) => {
                         <Fab size="medium" onClick={onChatSlide} color="secondary" aria-label="add" className={classes.buttonChat}>
                             <QuestionAnswerIcon />
                         </Fab>
-                        <KeyDataTaxiCar open={openKeyDataTaxiCar} onClose={offKeyDataTaxiCar} />
+                        <KeyDataTaxiCar {...alertShare} open={openKeyDataTaxiCar} onClose={offKeyDataTaxiCar} />
                     </Grid>
                     <Button variant="contained" onClick={exitShareGroup} style={{ backgroundColor: '#ffffff' }} className={classes.fab}>
                         ออกจากกลุ่ม

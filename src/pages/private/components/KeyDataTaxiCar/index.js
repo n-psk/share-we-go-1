@@ -43,9 +43,9 @@ const KeyDataTaxiCar = (props) => {
                         <Grid container justify="center" alignItems="center" >
                             <center>
                                 <h1>ทะเบียนรถ</h1>
-                                <h2>------</h2>
+                                <h2>{props.license_plate}</h2>
                                 <h1>สีรถ</h1>
-                                <h2>------</h2>
+                                <h2>{props.select}</h2>
                             </center>
                         </Grid>
                     </div>
@@ -60,7 +60,8 @@ const KeyDataTaxiCar = (props) => {
 
 KeyDataTaxiCar.propTypes = {
     open: PropTypes.bool,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    data_doc: PropTypes.object
 }
 
 export default KeyDataTaxiCar
