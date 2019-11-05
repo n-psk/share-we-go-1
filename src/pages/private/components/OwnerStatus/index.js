@@ -289,7 +289,7 @@ const OwnerStatus = (props) => {
                         ออกจากกลุ่ม
                         </Button>
                 </Map>
-                <ChatSlide open={openChatSlide} onClose={offChatSlide} />
+                <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} />
                 <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.uid} />
             </StyleBaseLine>
         </Fragment>

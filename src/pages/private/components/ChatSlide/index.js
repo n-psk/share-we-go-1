@@ -10,11 +10,13 @@ import Drawer from '@material-ui/core/Drawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { get } from '../../../../RESTful_API';
+import { get, post } from '../../../../RESTful_API';
 // import firebase from '../../../../connect/firebase';
 import { Loading } from './components/Loading';
 import ChatBar from '../ChatBar';
 import InputCaht from '../InputChat';
+import { dateTime } from '../../../../module';
+import './styles/chat-box.css';
 
 
 // style
@@ -34,7 +36,33 @@ function ChatSlide(props) {
     const classes = useStyles();
 
     const [profile, setProfile] = useState(null)
+    const [chat, setChat] = useState(null)
+    const [msg, setMsg] = React.useState(null)
 
+  const sendMsg = () => {
+
+    get.users.profile(props.status.member.uid).then((profile) => {
+      post.share.chat(props.status.share.id, {
+        uid: props.status.share.uid,
+        share_id: props.status.share.id,
+        profile: profile,
+        msg: `${msg}`
+
+      }, dateTime)
+      
+    })
+
+    // inputChat.current.focus();
+    // console.log(msg);
+        // get.share.chat(props.status.member.share_id).then((data) => {
+        //     setChat(data)
+        // })
+    setMsg('')
+  }
+
+  const updateMsg = (e) => {
+    setMsg(e.target.value)
+  }
     // firebase.auth().onAuthStateChanged((user) => {
     get.users.profile(props.uid).then((data) => {
         setProfile(data)
@@ -42,6 +70,10 @@ function ChatSlide(props) {
 
     })
     // })
+
+    get.share.chat(props.status.member.share_id).then((data) => {
+        setChat(data)
+    })
 
 
 
@@ -56,7 +88,7 @@ function ChatSlide(props) {
                     paper: classes.drawerPaper,
                 }}
             >
-                {profile !== null
+                {chat !== null
                     ? (<Fragment>
                         <ChatBar>
                             <IconButton onClick={props.onClose} style={{ position: "absolute", left: 0 }}>
@@ -69,13 +101,45 @@ function ChatSlide(props) {
                                 <h2>Chat</h2>
                             </div>
                         </ChatBar>
+
+                        <div className="box">
+                            <div className="chat-box">
+                                {chat !== null
+                                    ? (<Fragment>
+                                        {Object.keys(chat).map((key) => (
+                                            <Fragment>
+                                                {key !== props.uid
+                                                    ? (<Fragment>
+                                                        <div class="container darker">
+                                                            <img src={`${chat[key].profile.photoURL}`} alt="Avatar" class="right" />
+                                                            <h4 style={{
+                                                                marginTop: 0
+                                                            }}>{chat[key].profile.displayName}</h4>
+                                                            <p>{chat[key].msg}</p>
+                                                        </div>
+                                                    </Fragment>)
+                                                    : (<Fragment>
+                                                        <div class="container">
+                                                            <img src={`${chat[key].profile.photoURL}`} alt="Avatar" class="left" />
+                                                            <h2>{chat[key].profile.displayName}</h2>
+                                                            <p>{chat[key].msg}</p>
+                                                        </div>
+                                                    </Fragment>)
+                                                }
+                                            </Fragment>
+                                        ))}
+                                    </Fragment>)
+                                    : (<Fragment></Fragment>)
+                                }
+                            </div>
+                        </div>
                         <div style={{
                             position: 'absolute',
                             bottom: 0,
                             width: '-webkit-fill-available',
                             boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)',
                         }}>
-                            <InputCaht />
+                            <InputCaht value={msg} onChange={updateMsg} onClick={sendMsg}/>
                         </div>
                     </Fragment>)
                     : (<Loading onClose={props.onClose} />)
