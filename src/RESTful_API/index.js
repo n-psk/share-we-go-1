@@ -327,15 +327,15 @@ export const post = {
                 body: JSON.stringify(data)
             });
 
-            fetch(`http://localhost:5000/share-we-go-project/us-central1/api/history/${id}/_log`, {
-                mode: 'no-cors',
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    history: data,
-                    date: date
-                })
-            });
+            // fetch(`http://localhost:5000/share-we-go-project/us-central1/api/history/${id}/_log`, {
+            //     mode: 'no-cors',
+            //     method: 'post',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         history: data,
+            //         date: date
+            //     })
+            // });
 
             fetch(`http://localhost:5000/share-we-go-project/us-central1/api/status/${id}/owner`, {
                 mode: 'no-cors',
@@ -722,7 +722,7 @@ export const get = {
 
 export const d = {
     share: {
-        id: function (id,uid, date) {
+        id: function (id, uid, date) {
             fetch(`http://localhost:5000/share-we-go-project/us-central1/api/share/${id}/member`, {
                 method: 'delete',
                 headers: { 'Content-Type': 'application/json' },

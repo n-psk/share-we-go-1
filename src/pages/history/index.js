@@ -27,12 +27,22 @@ import { get } from '../../RESTful_API'
 
 class History extends React.Component {
 
-    state = {
-        keys: [{ test: 'test' }, { test: 'test' }],
-        history: null,
-        expanded: true
+    constructor(props) {
+        super(props)
+        this.state = {
+            keys: [{ test: 'test' }, { test: 'test' }],
+            history: null,
+            expanded: true
+        }
+
+
     }
 
+
+
+    updateHistory(data) {
+        this.setState({ history: data })
+    }
 
     handleChange = panel => (event, isExpanded) => {
         this.setState({ expanded: isExpanded ? panel : false });
@@ -43,21 +53,33 @@ class History extends React.Component {
     }
 
     componentDidMount() {
-        const me = this;
         firebase.auth().onAuthStateChanged((user) => {
+            const me = this;
             if (user) {
-                get.history.id(user.uid).then((data) => {
-                    if (data !== null) {
-                        me.setState({ history: data })
-                    }
+                firebase.database().ref(`history/${user.uid}`).once("value").then(function (snapshot) {
+                    let data = (snapshot.val())
+                    me.setState({ history: data })
                 })
+                // get.history.id(user.uid).then((data) => {
+                //     console.log(data);
+
+                //     if (data !== null) {
+                //         me.setState({ history: data })
+                //     }
+                // })
             }
         })
 
     }
 
     render() {
+        const { history } = this.state;
 
+        // console.log(Object.keys(history).length);
+        if (history !== null) {
+
+            console.log(history);
+        }
 
         return (
             <React.Fragment>
@@ -81,8 +103,8 @@ class History extends React.Component {
                 <div style={{ width: '100%', marginTop: '60px' }}>
                     {this.state.history !== null
                         ? (<React.Fragment>
-                            {this.state.history.map((key) => (
-                                <ExpansionPanel expanded={this.state.expanded === true} onChange={this.handleChange(`${key}`)}>
+                            {Object.keys(this.state.history).map((key) => (
+                                <ExpansionPanel expanded={this.state.expanded} onChange={this.handleChange(`${key}`)}>
                                     <ExpansionPanelSummary
                                         expandIcon={<ExpandMoreIcon />}
                                         aria-controls="panel1bh-content"
