@@ -1,13 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { routerPublic, routerPrivate } from './router';
+// import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
 import PropTypes from 'prop-types';
-// import firebase from './connect/firebase';
-// import Private from './pages/private';
-// import Login from './pages/login'
-// import { post, get } from './RESTful_API';
-// import { dateTime } from './module';
+import Login from './pages/login';
+import Private from './pages/private';
+import Profile from './pages/profile';
+import DocTaxi from './pages/doc_taxi';
+import ShareLocation from './pages/share_location';
+import History from './pages/history';
 import './App.css';
 import { useAuth, useLocation, useUser } from './StoreData';
 
@@ -28,34 +29,72 @@ const App = (props) => {
           ? (<React.Fragment><Loading /></React.Fragment>)
           : (<React.Fragment>
             {auth === null
-              ? (<React.Fragment>{
-                routerPublic.map((route, index) => (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-                    component={route.page}
-                    db={props.db}
-                  />
-                ))
-              }</React.Fragment>)
-              : (<React.Fragment>{routerPrivate.map((route, index) => (
+              ? (<React.Fragment>
+                <Route path="/" exact>
+                  <Login db={props.db} />
+                </Route>
+
+                <Route path="/login" >
+                  <Login db={props.db} />
+                </Route>
+              </React.Fragment>)
+              : (<React.Fragment>
                 <Route
-                  key={index}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.page}
-                  user={user}
-                  location={location}
-                  auth={auth}
-                  db={props.db}
-                />
-              ))}</React.Fragment>)
+                  path='/'
+                  exact>
+                  <Private
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+                <Route
+                  path='private'>
+                  <Private
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+                <Route
+                  path='/profile:id'>
+                  <Profile
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+                <Route
+                  path='/share_location'>
+                  <ShareLocation
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+                <Route
+                  path='/history'>
+                  <History
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+
+                <Route
+                  path='/doc_taxi'>
+                  <DocTaxi
+                    user={user}
+                    location={location}
+                    auth={auth}
+                    db={props.db} />
+                </Route>
+              </React.Fragment>)
             }
           </React.Fragment>)
         }
       </Router>
-    </React.Fragment>
+    </React.Fragment >
   )
 }
 

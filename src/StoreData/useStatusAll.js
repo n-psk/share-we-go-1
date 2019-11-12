@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { dateTime } from '../module';
 
-const useStatusAll = (firebase) => {
+const useStatusAll = (props) => {
   const [statusAllState, setState] = useState({
     statusAll: null
   });
@@ -10,14 +10,14 @@ const useStatusAll = (firebase) => {
     let path = `status`
     // let _log = `users/${user.uid}/_log/`
 
-    const unsubscribe = firebase.database().ref(`${path}`).once("value").then(function (snapshot) {
+    const unsubscribe = props.db.database().ref(`${path}`).once("value").then(function (snapshot) {
       let data = (snapshot.val())
 
       setState({ statusAll: data })
 
     })
     return unsubscribe;
-  }, [firebase]);
+  }, [props]);
   return statusAllState;
 }
 

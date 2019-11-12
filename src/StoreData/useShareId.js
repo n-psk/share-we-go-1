@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { dateTime } from '../module';
 
-const useShareId = (firebase, user) => {
+const useShareId = (props, user) => {
   const [shareIdState, setState] = useState({
     shareId: null
   });
@@ -10,14 +10,14 @@ const useShareId = (firebase, user) => {
     let path = `share/${user.uid}`
     // let _log = `users/${user.uid}/_log/`
 
-    const unsubscribe = firebase.database().ref(`${path}`).once("value").then(function (snapshot) {
+    const unsubscribe = props.db.database().ref(`${path}`).once("value").then(function (snapshot) {
       let data = (snapshot.val())
 
       setState({ shareId: data })
 
     })
     return unsubscribe;
-  }, [firebase, user]);
+  }, [props, user]);
   return shareIdState;
 }
 

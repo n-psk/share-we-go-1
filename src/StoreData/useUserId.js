@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 // import { dateTime } from '../module';
 
-const useUserId = (firebase, user) => {
+const useUserId = (props) => {
   const [userIdState, setState] = useState({
     userId: null
   });
 
   useEffect(() => {
-    let path = `users/${user.uid}`
+    let path = `users/${props.user.uid}`
     // let _log = `users/${user.uid}/_log/`
 
-    const unsubscribe = firebase.database().ref(`${path}`).once("value").then(function (snapshot) {
+    const unsubscribe = props.db.database().ref(`${path}`).once("value").then(function (snapshot) {
       let data = (snapshot.val())
 
       setState({ userId: data })
 
     })
     return unsubscribe;
-  }, [firebase, user]);
+  }, [props]);
   return userIdState;
 }
+
 
 export default useUserId;

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 // import Modal from '@material-ui/core/Modal';
 // import Backdrop from '@material-ui/core/Backdrop';
 // import Fade from '@material-ui/core/Fade';
-// import firebase from '../../connect/firebase';
+import firebase from 'firebase';
 import ContainerUI from '../../components/ContainerUI';
 import 'firebase/auth';
 // import InstallApp from '../../components/install';
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const Login = (props) => {
-    const classes = useStyles();
+    // const classes = useStyles();
     const [open, setOpen] = React.useState(true);
 
     const uiConfig = {

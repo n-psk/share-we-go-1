@@ -8,16 +8,13 @@ const useAuth = (props) => {
   });
 
   useEffect(() => {
-    const unsubscribe = props.db.auth().onAuthStateChanged(authState =>
-      setState({ isLoading: false, auth: authState })
+    const unsubscribe = props.db.auth().onAuthStateChanged(auth =>
+      setState({ isLoading: false, auth: auth })
     );
     return unsubscribe;
   }, [props]);
   return authState;
 }
 
-useAuth.propTypes = {
-  db: PropTypes.object
-}
 
 export default useAuth;
