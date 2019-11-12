@@ -24,11 +24,12 @@ import CommuteIcon from '@material-ui/icons/Commute';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
-import firebase from '../../connect/firebase';
-import { post, get } from '../../RESTful_API';
+// import firebase from '../../connect/firebase';
+// import { post, get } from '../../RESTful_API';
 import { dateTime } from '../../module';
-import { setDate } from 'date-fns';
+// import { setDate } from 'date-fns';
 import AlertCheck from './components/AlertCheck';
+import { useProfile, useShareId } from '../../StoreData';
 
 
 require('es6-promise').polyfill();
@@ -149,12 +150,14 @@ function ShareLocation(props) {
     const [sex, setSex] = useState(new Set());
     const [max_number, setMaxNumber] = useState(new Set());
     const [date, setDate] = useState(new Set());
-    const [user, setUser] = useState(new Set());
+    // const [user, setUser] = useState(new Set());
     const [open, setOpen] = useState(false);
+    const {profile} = useProfile(props.db,props.auth)
+    const {shareId} = useShareId(props.db,props.auth)
 
-    firebase.auth().onAuthStateChanged((user) => {
-        setUser(user)
-    })
+    // firebase.auth().onAuthStateChanged((user) => {
+    //     setUser(user)
+    // })
 
     const steps = getSteps();
 
@@ -228,32 +231,32 @@ function ShareLocation(props) {
 
 
         if (activeStep === 0) {
-            get.share.location(user.uid).then(function (data) {
+            // get.share.location(user.uid).then(function (data) {
                 setLocation({
-                    start_address: data.routes[0].legs[0].start_address,
-                    end_address: data.routes[0].legs[0].end_address
+                    start_address: shareId.location.routes[0].legs[0].start_address,
+                    end_address: shareId.location.routes[0].legs[0].end_address
                 })
-            });
+            // });
         }
         if (activeStep === 1) {
-            get.share.date(user.uid).then(function (data) {
+            // get.share.date(user.uid).then(function (data) {
                 setDate({
-                    end_time: data.end_time.value,
-                    start_time: data.start_time.value
+                    end_time: shareId.date.end_time.value,
+                    start_time: shareId.date.start_time.value
                 })
-            });
+            // });
         }
 
         if (activeStep === 2) {
-            get.share.max_number(user.uid).then(function (data) {
-                setMaxNumber({ value: data.value })
-            });
+            // get.share.max_number(user.uid).then(function (data) {
+                setMaxNumber({ value: shareId.max_number.value })
+            // });
         }
 
         if (activeStep === 3) {
-            get.share.sex(user.uid).then(function (data) {
-                setSex({ value: data.value })
-            });
+            // get.share.sex(user.uid).then(function (data) {
+                setSex({ value: shareId.sex.value })
+            // });
 
         }
 
@@ -274,23 +277,33 @@ function ShareLocation(props) {
     };
 
     function handleReset() {
-        // setActiveStep(0);
-        // setCompleted(new Set());
-        // setSkipped(new Set());
-        firebase.auth().onAuthStateChanged((user) => {
-            post.status.share(user.uid, { value: "true", uid: user.uid, id: user.uid }, dateTime)
-            post.status.owner(user.uid, { value: "true", uid: user.uid, share_id: user.uid }, dateTime)
-            post.status.member(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
-            post.status.alert(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
-            post.status.process(user.uid, { value: "false", uid: user.uid, share_id: user.uid }, dateTime)
+        let path_status_share = `status/${props.auth.uid}/share`
+        let path_status_share_log = `status/${props.auth.uid}/share/_log`
+        let path_status_owner = `status/${props.auth.uid}/owner`
+        let path_status_owner_log = `status/${props.auth.uid}/owner/_log`
+        let path_share_owner = `share/${props.auth.uid}/owner`
+        let path_share_owner_log = `share/${props.auth.uid}/owner/_log`
+        let path_share_member = `share/${props.auth.uid}/member`
+        let path_share_member_log = `share/${props.auth.uid}/member/_log`
 
-            get.users.profile(user.uid).then(function (data) {
+        let data_status_share = { value: "true", uid: props.auth.uid, id: props.auth.uid }
+        let data_status_owner = { value: "true", uid: props.auth.uid, id: props.auth.uid }
+        let data_share_owner = { id: props.auth.uid, profile: profile }
+        let data_share_member = { [props.auth.uid]: { share_id: props.auth.uid, uid: props.auth.uid, profile: profile } }
 
-                post.share.owner(user.uid, { id: user.uid, profile: data }, dateTime)
+        props.db.database().ref(`${path_status_share}`).update(data_status_share)
+        props.db.database().ref(`${path_status_share_log}`).push({ share: data_status_share, date: dateTime })
 
-                post.share.member(user.uid, { [user.uid]:{share_id: user.uid, uid: user.uid, profile: data} }, dateTime)
-            })
-        })
+        props.db.database().ref(`${path_status_owner}`).update(data_status_owner)
+        props.db.database().ref(`${path_status_owner_log}`).push({ owner: data_status_owner, date: dateTime })
+
+        props.db.database().ref(`${path_share_owner}`).update(data_share_owner)
+        props.db.database().ref(`${path_share_owner_log}`).push({ owner: data_share_owner, date: dateTime })
+
+        props.db.database().ref(`${path_share_member}`).update(data_share_member)
+        props.db.database().ref(`${path_share_member_log}`).push({ member: data_share_member, date: dateTime })
+
+      
         setOpen(true)
         //    props.history.goBack()
     }

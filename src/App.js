@@ -1,107 +1,66 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { routerPublic, routerPrivate } from './router';
 import Loading from './pages/loading';
-import firebase from './connect/firebase';
+import PropTypes from 'prop-types';
+// import firebase from './connect/firebase';
 // import Private from './pages/private';
 // import Login from './pages/login'
-import { post, get } from './RESTful_API';
-import { dateTime } from './module';
+// import { post, get } from './RESTful_API';
+// import { dateTime } from './module';
 import './App.css';
+import { useAuth, useLocation, useUser } from './StoreData';
 
 
-class App extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      loading: true,
-      auth: false,
-    }
+const App = (props) => {
+  const { isLoading, auth } = useAuth(props);
+  const { user } = useUser(props);
+  const { location } = useLocation(props)
 
-    // const me = this
-
-    firebase.auth().onAuthStateChanged((user) => {
-      this.onAuth(user)
-    });
-
-    if (this.state.auth !== null) {
-      get.status.member(this.state.auth.uid).then(function (data) {
-        console.log(data);
-        // me.setState({ status: { member: data } })
-        // this.updateStatusMember(data)
-      });
-    }
-  }
-
-  componentDidMount() {
-
-    // บล็อกการ zoom
-    document.firstElementChild.style.zoom = "reset";
+  // บล็อกการ zoom
+  document.firstElementChild.style.zoom = "reset";
 
 
-
-    // กำหนดเวลาโชว์การเปิดตัว
-    setTimeout(() => {
-      this.setState({ loading: false })
-    }, 3000)
-
-
-  }
-
-  onAuth(user) {
-    if (user) {
-      // console.log(user);
-      this.setState({ auth: true })
-      post.users.user(user.uid, user, dateTime)
-
-      if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(function (position) {
-          post.users.location(user.uid, position, dateTime)
-          console.log(position);
-        }, function () {
-          // handleLocationError(true, infoWindow, map.getCenter());
-        });
-      }
-    }
-  }
-
-
-  render() {
-
-    const { auth, loading } = this.state;
-
-    return (
-      <React.Fragment>
-        <Router>
-          {loading == true
-            ? (<React.Fragment><Loading /></React.Fragment>)
-            : (<React.Fragment>
-              {auth === false
-                ? (<React.Fragment>{
-                  routerPublic.map((route, index) => (
-                    <Route
-                      key={index}
-                      path={route.path}
-                      exact={route.exact}
-                      component={route.page}
-                    />
-                  ))
-                }</React.Fragment>)
-                : (<React.Fragment>{routerPrivate.map((route, index) => (
+  return (
+    <React.Fragment>
+      <Router>
+        {isLoading == true
+          ? (<React.Fragment><Loading /></React.Fragment>)
+          : (<React.Fragment>
+            {auth === null
+              ? (<React.Fragment>{
+                routerPublic.map((route, index) => (
                   <Route
                     key={index}
                     path={route.path}
                     exact={route.exact}
                     component={route.page}
+                    db={props.db}
                   />
-                ))}</React.Fragment>)
-              }
-            </React.Fragment>)
-          }
-        </Router>
-      </React.Fragment>
-    )
-  }
+                ))
+              }</React.Fragment>)
+              : (<React.Fragment>{routerPrivate.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  exact={route.exact}
+                  component={route.page}
+                  user={user}
+                  location={location}
+                  auth={auth}
+                  db={props.db}
+                />
+              ))}</React.Fragment>)
+            }
+          </React.Fragment>)
+        }
+      </Router>
+    </React.Fragment>
+  )
+}
+
+App.propType = {
+  db: PropTypes.object
 }
 
 

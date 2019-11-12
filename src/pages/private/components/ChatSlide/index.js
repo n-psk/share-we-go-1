@@ -10,13 +10,14 @@ import Drawer from '@material-ui/core/Drawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { get, post } from '../../../../RESTful_API';
+// import { get, post } from '../../../../RESTful_API';
 // import firebase from '../../../../connect/firebase';
 import { Loading } from './components/Loading';
 import ChatBar from '../ChatBar';
 import InputCaht from '../InputChat';
 import { dateTime } from '../../../../module';
 import './styles/chat-box.css';
+import { useProfile, useShareId } from '../../../../StoreData';
 
 
 // style
@@ -35,45 +36,57 @@ function ChatSlide(props) {
     const theme = useTheme();
     const classes = useStyles();
 
-    const [profile, setProfile] = useState(null)
+    // const [profile, setProfile] = useState(null)
     const [chat, setChat] = useState(null)
     const [msg, setMsg] = React.useState(null)
+    const { profile } = useProfile(props.db, props.auth)
+    const { shareId } = useShareId(props.db, { uid: props.status.member.uid })
 
-  const sendMsg = () => {
+    const sendMsg = () => {
 
-    get.users.profile(props.status.member.uid).then((profile) => {
-      post.share.chat(props.status.share.id, {
-        uid: props.status.share.uid,
-        share_id: props.status.share.id,
-        profile: profile,
-        msg: `${msg}`
+        // get.users.profile(props.status.member.uid).then((profile) => {
 
-      }, dateTime)
-      
-    })
+        let path = `share/${props.status.member.uid}/chat`
 
-    // inputChat.current.focus();
-    // console.log(msg);
+        props.db.database().ref(`${path}`).push({
+            uid: props.status.share.uid,
+            share_id: props.status.share.id,
+            profile: profile,
+            msg: `${msg}`,
+            date: dateTime
+        })
+        // post.share.chat(props.status.share.id, {
+        //     uid: props.status.share.uid,
+        //     share_id: props.status.share.id,
+        //     profile: profile,
+        //     msg: `${msg}`
+
+        // }, dateTime)
+
+        // })
+
+        // inputChat.current.focus();
+        // console.log(msg);
         // get.share.chat(props.status.member.share_id).then((data) => {
         //     setChat(data)
         // })
-    setMsg('')
-  }
+        setMsg('')
+    }
 
-  const updateMsg = (e) => {
-    setMsg(e.target.value)
-  }
+    const updateMsg = (e) => {
+        setMsg(e.target.value)
+    }
     // firebase.auth().onAuthStateChanged((user) => {
-    get.users.profile(props.uid).then((data) => {
-        setProfile(data)
-        // console.log(data);
+    // get.users.profile(props.uid).then((data) => {
+    // setProfile(profile)
+    // console.log(data);
 
-    })
+    // })
     // })
 
-    get.share.chat(props.status.member.share_id).then((data) => {
-        setChat(data)
-    })
+    // get.share.chat(props.status.member.share_id).then((data) => {
+        setChat(shareId.chat)
+    // })
 
 
 
@@ -139,7 +152,7 @@ function ChatSlide(props) {
                             width: '-webkit-fill-available',
                             boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)',
                         }}>
-                            <InputCaht value={msg} onChange={updateMsg} onClick={sendMsg}/>
+                            <InputCaht value={msg} onChange={updateMsg} onClick={sendMsg} />
                         </div>
                     </Fragment>)
                     : (<Loading onClose={props.onClose} />)

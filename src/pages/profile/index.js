@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 
-import {withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
 import { withStyles } from '@material-ui/styles';
 import List from '@material-ui/core/List';
@@ -20,9 +20,9 @@ import TextField from '@material-ui/core/TextField';
 // import Personalform from "../components/personalInformation";
 
 // import Link from "next/link";
-import firebase from "../../connect/firebase";
+// import firebase from "../../connect/firebase";
 import { InputBase } from '@material-ui/core';
-import { post,get } from '../../RESTful_API';
+// import { post, get } from '../../RESTful_API';
 // import { writeUserDataEdit } from '../firebase-database/write-data'
 import PersonIcon from '@material-ui/icons/Person';
 import EmailIcon from '@material-ui/icons/Email';
@@ -30,6 +30,9 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import WcIcon from '@material-ui/icons/Wc';
 import FaceIcon from '@material-ui/icons/Face';
 import { dateTime } from '../../module';
+import { useProfile } from '../../StoreData';
+
+
 
 class Profile extends React.Component {
 
@@ -110,59 +113,70 @@ class Profile extends React.Component {
             age: this.state.age
         }
 
-        firebase.auth().onAuthStateChanged((user) => {
+        // firebase.auth().onAuthStateChanged((user) => {
 
-            post.users.profile(user.uid, data, dateTime)
+        //     post.users.profile(user.uid, data, dateTime)
 
 
+        // })
+
+        let path = `users/${this.props.match.params.id}/profile`
+        let _log = `users/${this.props.match.params.id}/profile/_log`
+
+        this.props.db.database().ref(`${path}`).update(data)
+        this.props.db.database().ref(`${_log}`).push({
+            profile: data,
+            date: dateTime
         })
+
         this.setState({ statusEdit: true })
     }
 
     componentDidMount() {
+        const { profile } = useProfile(this.props.db, { uid: this.props.match.params.id })
         const me = this;
-        firebase.auth().onAuthStateChanged((user) => {
-            this.setState({ uid: user.uid })
-            get.users.profile(this.props.match.params.id).then(function (data) {
-                console.log(data);
-                if (data) {
-                    me.setState({ nullProfile: false })
-                } else {
-                    me.setState({ nullProfile: true })
-                }
+        // firebase.auth().onAuthStateChanged((user) => {
+        this.setState({ uid: this.props.auth.uid })
+        // get.users.profile(this.props.match.params.id).then(function (data) {
+        console.log(profile);
+        if (profile) {
+            me.setState({ nullProfile: false })
+        } else {
+            me.setState({ nullProfile: true })
+        }
 
-                if (data.photoURL !== null) {
+        if (profile.photoURL !== null) {
 
-                    me.setState({ photoURL: data.photoURL });
-                }
+            me.setState({ photoURL: profile.photoURL });
+        }
 
-                if (data.displayName !== null) {
+        if (profile.displayName !== null) {
 
-                    me.setState({ displayName: data.displayName });
-                }
+            me.setState({ displayName: profile.displayName });
+        }
 
-                if (data.email !== null) {
+        if (profile.email !== null) {
 
-                    me.setState({ email: data.email });
-                }
+            me.setState({ email: profile.email });
+        }
 
-                if (data.phoneNumber !== null) {
+        if (profile.phoneNumber !== null) {
 
-                    me.setState({ phoneNumber: data.phoneNumber });
-                }
+            me.setState({ phoneNumber: profile.phoneNumber });
+        }
 
-                if (data.sex !== null) {
+        if (profile.sex !== null) {
 
-                    me.setState({ sex: data.sex });
-                }
+            me.setState({ sex: profile.sex });
+        }
 
-                if (data.age !== null) {
+        if (profile.age !== null) {
 
-                    me.setState({ age: data.age });
-                }
-            })
+            me.setState({ age: profile.age });
+        }
+        // })
 
-        })
+        // })
     }
 
     render() {

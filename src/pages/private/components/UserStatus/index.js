@@ -13,121 +13,29 @@ import AddIcon from '@material-ui/icons/Add';
 
 import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 
-import { get, post } from '../../../../RESTful_API'
 import { VisibilityButton } from '../../../../components/VisibilityButton';
-import { dateTime } from '../../../../module';
 import SearchBar from '../SearchBar';
 import SearchMap from '../SearchMap';
 import MenuSlide from '../MenuSlide';
 
 import './styles/marker-custom.css';
+import { useUserId, useShareAll, useShareId, useStatusAll } from '../../../../StoreData';
 
 
 const UserStatus = (props) => {
 
-
-    const [share, setShare] = useState(null)
-    const [users, setUsers] = useState(null)
     const [map, setMap] = useState(null)
     const [openVisibility, setOpenVisibility] = useState(false)
-    const [openCreateShare, setOpenCreateShare] = useState(false)
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
+    const [openModelJoinShare, setOpenModelJoinShare] = useState({
+        key: '',
+        bool: false
+    })
 
-
-    const updateDataShareClient = (key) => {
-
-        get.share.id(key).then(function (data) {
-            setShare(data)
-        })
-
-        // get.share.location(key).then(function (location) {
-        //     me.setState({ share: { [key]: { location_share: location } } })
-        // })
-
-        // get.share.date(key).then(function (date) {
-        //     me.setState({ share: { [key]: { date_share: date } } })
-        // })
-
-        // get.share.max_number(key).then(function (max_number) {
-        //     me.setState({ share: { [key]: { max_number_share: max_number } } })
-        // })
-
-        // get.share.sex(key).then(function (sex) {
-        //     me.setState({ share: { [key]: { sex_share: sex } } })
-        // })
-
-        // get.share.member(key).then(function (member) {
-        //     me.setState({ share: { [key]: { member_share: member } } })
-        // })
-
-    }
-
-    const updateUser = (data) => {
-        setUsers(data)
-    }
-
-
-    const joinLocation = (key, uid, data) => {
-        post.share.member(key, {
-            [uid]: {
-                uid: `${uid}`,
-                share_id: `${key}`,
-                profile: data
-            }
-        },
-            dateTime
-        )
-
-        post.status.share(
-            uid,
-            {
-                id: `${key}`,
-                uid: `${uid}`,
-                value: "false"
-            },
-            dateTime
-        );
-
-        post.status.owner(
-            uid,
-            {
-                share_id: `${key}`,
-                uid: `${uid}`,
-                value: "false"
-            },
-            dateTime
-        );
-
-        post.status.member(
-            uid,
-            {
-                share_id: `${key}`,
-                uid: `${uid}`,
-                value: "true"
-            },
-            dateTime
-        );
-
-        post.status.alert(
-            uid,
-            {
-                share_id: `${key}`,
-                uid: `${uid}`,
-                value: "false"
-            },
-            dateTime
-        );
-
-        post.status.process(
-            uid,
-            {
-                share_id: `${key}`,
-                uid: `${uid}`,
-                value: "false"
-            },
-            dateTime
-        );
-    }
+    const { userId } = useUserId(props.db, props.auth)
+    const { shareAll } = useShareAll(props.db);
+    const {shareId} = useShareId(props.db,props.auth);
+    const { statusAll } = useStatusAll(props.db);
 
 
     const onVisibility = () => {
@@ -138,20 +46,25 @@ const UserStatus = (props) => {
         setOpenVisibility(false)
     }
 
-    const onCreateShare = () => {
-        setOpenCreateShare(true)
-    }
-
-    const offCreateShare = () => {
-        setOpenCreateShare(false)
-    }
-
     const onMenuSlide = () => {
         setOpenMenuSlide(true)
     }
 
     const offMenuSlide = () => {
         setOpenMenuSlide(false)
+    }
+    const onModelJoinShare = (key) => {
+        setOpenModelJoinShare({
+            key: `${key}`,
+            bool: true
+        })
+    }
+
+    const offModelJoinShare = () => {
+        setOpenModelJoinShare({
+            key: '',
+            bool: false
+        })
     }
 
 
@@ -239,40 +152,37 @@ const UserStatus = (props) => {
                             return this.latlng;
                         };
 
-                        get.users.id(props.uid).then(function (data) {
-                            console.log(data);
-                            updateUser(data)
+                        
 
-                            var myLatlng = new google.maps.LatLng(data.location.coords.latitude, data.location.coords.longitude);
-                            if (data.profile !== undefined) {
+                            var myLatlng = new google.maps.LatLng(userId.location.coords.latitude, userId.location.coords.longitude);
+                            if (userId.profile !== undefined) {
                                 var marker1 = new CustomMarker(
                                     myLatlng,
                                     map,
                                     {},
-                                    data.profile.photoURL
+                                    userId.profile.photoURL
                                 );
                             } else {
                                 window.location.reload()
                             }
 
                             var pos = {
-                                lat: data.location.coords.latitude,
-                                lng: data.location.coords.longitude
+                                lat: userId.location.coords.latitude,
+                                lng: userId.location.coords.longitude
                             };
 
                             marker1.latlng = { lat: pos.lat, lng: pos.lng };
                             marker1.draw();
 
                             map.setCenter(pos);
-                        });
 
                         // share
-                        get.share.all().then(function (data) {
-                            Object.keys(data).map((key) => {
+                       
+                            Object.keys(shareAll).map((key) => {
                                 // console.log(key); // all key
-                                get.status.share(key).then(function (status) {
-                                    if (status.value !== "false") {
-                                        let myLatlng = new google.maps.LatLng(data[key].location.routes[0].legs[0].start_location.lat, data[key].location.routes[0].legs[0].start_location.lng);
+                                // get.status.share(key).then(function (status) {
+                                    if (statusAll[key].share.value !== "false") {
+                                        let myLatlng = new google.maps.LatLng(shareAll[key].location.routes[0].legs[0].start_location.lat, shareAll[key].location.routes[0].legs[0].start_location.lng);
 
 
                                         const marker = new CustomMarker(
@@ -284,8 +194,8 @@ const UserStatus = (props) => {
 
 
                                         var pos = {
-                                            lat: data[key].location.routes[0].legs[0].start_location.lat,
-                                            lng: data[key].location.routes[0].legs[0].start_location.lng
+                                            lat: shareAll[key].location.routes[0].legs[0].start_location.lat,
+                                            lng: shareAll[key].location.routes[0].legs[0].start_location.lng
                                         };
 
                                         marker.latlng = { lat: pos.lat, lng: pos.lng };
@@ -300,17 +210,17 @@ const UserStatus = (props) => {
                                             <h2>ข้อมูลการแชร์</h2>
                                             </center>
                                             <hr></hr>
-                                            <u style="font-size: 15px">ต้นทาง: </u><u>${data[key].location.routes[0].legs[0].start_address}</u><b></b>
+                                            <u style="font-size: 15px">ต้นทาง: </u><u>${shareAll[key].location.routes[0].legs[0].start_address}</u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ปลายทาง: </u><u>${data[key].location.routes[0].legs[0].end_address}</u><b></b>
+                                            <u style="font-size: 15px">ปลายทาง: </u><u>${shareAll[key].location.routes[0].legs[0].end_address}</u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">เริ่มแชร์เมื่อ: </u><u>${data[key].date.start_time.value}</<u><b></b>
+                                            <u style="font-size: 15px">เริ่มแชร์เมื่อ: </u><u>${shareAll[key].date.start_time.value}</<u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ปิดแชร์เวลา: </u><u>${data[key].date.end_time.value}</<u><b></b>
+                                            <u style="font-size: 15px">ปิดแชร์เวลา: </u><u>${shareAll[key].date.end_time.value}</<u><b></b>
                                             <br></br>
-                                            <u style="font-size: 15px">ต้องการผู้เดินทางเพิ่ม: </u><u>${Object.keys(data[key].member).length - 1} </<u><b>/ ${data[key].max_number.value} คน </b>
+                                            <u style="font-size: 15px">ต้องการผู้เดินทางเพิ่ม: </u><u>${Object.keys(shareAll[key].member).length - 1} </<u><b>/ ${shareAll[key].max_number.value} คน </b>
                                             <br></br>
-                                            <u style="font-size: 15px">เดินทางกับเพศ: </u><u>${data[key].sex.value}</<u><b> </b>
+                                            <u style="font-size: 15px">เดินทางกับเพศ: </u><u>${shareAll[key].sex.value}</<u><b> </b>
                                             <hr></hr>
                                             <center><button style="background-color: #ffffff;
                                             font-size: 17px;
@@ -325,10 +235,10 @@ const UserStatus = (props) => {
                                             maxWidth: 500
                                         });
 
-                                        console.log(data[key]);
+                                        console.log(shareAll[key]);
 
-                                        const member_length = Object.keys(data[key].member).length
-                                        const max_number_value = data[key].max_number.value
+                                        const member_length = Object.keys(shareAll[key].member).length
+                                        const max_number_value = shareAll[key].max_number.value
 
                                         marker.addListener('click', function (key) {
 
@@ -343,70 +253,13 @@ const UserStatus = (props) => {
                                         });
 
                                         $(document).on('click', `#join-share-${key}`, function () {
-                                            get.status.member(props.uid).then(function (member_status) {
-                                                if (member_status.value !== "true") {
-                                                    get.users.profile(props.uid).then(function (profile) {
-                                                        joinLocation(key, props.uid, profile)
-                                                        // post.share.member(key, { [member_status.uid]: { id: member_status.uid, profile: profile } }, dateTime)
-
-                                                        // post.status.member(
-                                                        //     member_status.uid,
-                                                        //     {
-                                                        //         share_id: key,
-                                                        //         uid: member_status.uid,
-                                                        //         value: "true"
-                                                        //     },
-                                                        //     dateTime
-                                                        // );
-
-                                                        // post.status.alert(
-                                                        //     member_status.uid,
-                                                        //     {
-                                                        //         share_id: key,
-                                                        //         uid: member_status.uid,
-                                                        //         value: "false"
-                                                        //     },
-                                                        //     dateTime
-                                                        // );
-
-                                                        // post.status.owner(
-                                                        //     member_status.uid,
-                                                        //     {
-                                                        //         share_id: key,
-                                                        //         uid: member_status.uid,
-                                                        //         value: "false"
-                                                        //     },
-                                                        //     dateTime
-                                                        // );
-
-                                                        // post.status.process(
-                                                        //     member_status.uid,
-                                                        //     {
-                                                        //         share_id: key,
-                                                        //         uid: member_status.uid,
-                                                        //         value: "false"
-                                                        //     },
-                                                        //     dateTime
-                                                        // );
-
-                                                        // post.status.share(
-                                                        //     member_status.uid,
-                                                        //     {
-                                                        //         id: key,
-                                                        //         uid: member_status.uid,
-                                                        //         value: "false"
-                                                        //     },
-                                                        //     dateTime
-                                                        // );
-                                                    })
-                                                }
-                                            })
+                                            onModelJoinShare(key)
+                                           
                                         })
 
                                     }
                                 })
-                            })
-                        })
+                            // })
                     }}
                 >
                     <SearchBar >
@@ -419,12 +272,19 @@ const UserStatus = (props) => {
                     </SearchBar>
                     <VisibilityButton open={openVisibility} on={onVisibility.bind(this)} off={offVisibility.bind(this)} />
                     <Link to="/share_location">
-                        <Button onClick={onCreateShare.bind(this)} variant="contained" style={{ backgroundColor: '#ffffff' }} className={props.classes.fab}>
+                        <Button variant="contained" style={{ backgroundColor: '#ffffff' }} className={props.classes.fab}>
                             <AddIcon color="action" fontSize="large" />
                         </Button>
                     </Link>
+                    {/* <ModelExitShare
+                        uid={props.auth.uid}
+                        share_id={openModelJoinShare.key}
+                        share={shareId}
+                        open={openModelJoinShare.bool}
+                        onClose={offModelJoinShare}
+                        {...props} /> */}
                 </Map>
-                <MenuSlide open={openMenuSlide} onClose={offMenuSlide.bind(this)} uid={props.uid} />
+                <MenuSlide open={openMenuSlide} onClose={offMenuSlide.bind(this)} uid={props.auth.uid} />
             </StyleBaseLine>
         </Fragment>
     )

@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
 // import { post, d } from '../../../../../../RESTful_API'
 // import { dateTime } from '../../../../../../module';
+import { useProfile } from '../../../../../../StoreData'
 
 const useStyles = makeStyles(theme => ({
     modal: {
@@ -25,34 +26,28 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const ModelExitShare = (props) => {
+const ModelJoinShare = (props) => {
     const classes = useStyles();
+    const { profile } = useProfile(props.db, props.auth)
 
-    const removeShare = () => {
-        let path_history = `history/${props.auth.uid}`;
-        let path_status_owner = `status/${props.auth.uid}/owner`;
-        let path_share_id = `share/${props.share_id}`
-
-
-        let data_status_owner = {
+    const joinShare = () => {
+        let path_status_member = `status/${props.auth.uid}/member`;
+        let path_share_member = `share/${props.auth.uid}/member`;
+        let data_status_member = {
             uid: `${props.auth.uid}`,
             share_id: `${props.share_id}`,
-            value: 'false'
+            value: 'true'
         }
+        let data_share_member = {
+            uid: `${props.auth.uid}`,
+            share_id: `${props.share_id}`,
+            profile: profile
 
-        // post.history.id(props.auth.uid, props.share, dateTime);
+        }
+        props.db.database().ref(`${path_status_member}`).update(data_status_member)
+        props.db.database().ref(`${path_share_member}`).update(data_share_member)
 
-        props.db.database().ref(`${path_history}`).push(props.share)
-
-
-        props.db.database().ref(`${path_status_owner}`).update(data_status_owner)
-
-        props.db.database().ref(`${path_share_id}`).delete()
-
-        // setTimeout(() => {
-        //     props.history.goBack()
-        // }, 3500)
-
+        props.history.push('/')
     }
     return (
         <React.Fragment>
@@ -72,9 +67,9 @@ const ModelExitShare = (props) => {
                     <div className={classes.paper}>
                         <Grid container justify="center" alignItems="center" >
                             <center>
-                                <h1>คุณต้องการอยากจะออกจากกลุ่มแชร์</h1>
+                                <h1>คุณต้องการเข้าร่วมกลุ่มแชร์นี้</h1>
 
-                                <Button onClick={removeShare} >ตกลง</Button>
+                                <Button onClick={joinShare} >ตกลง</Button>
                             </center>
                         </Grid>
                     </div>
@@ -87,9 +82,9 @@ const ModelExitShare = (props) => {
 
 
 
-ModelExitShare.propTypes = {
+ModelJoinShare.propTypes = {
     open: PropTypes.bool,
     onClose: PropTypes.func
 }
 
-export default withRouter(ModelExitShare)
+export default withRouter(ModelJoinShare)

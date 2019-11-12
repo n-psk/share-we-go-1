@@ -18,22 +18,25 @@ import ModelExitShare from './components/ModelExitShare'
 // import { CustomMarker } from '../../../../components/CustomMarker';
 // import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
-import { get } from '../../../../RESTful_API'
+// import { get } from '../../../../RESTful_API'
 import ChatSlide from '../ChatSlide';
 import MemberTypeIconStatus from '../MemberModalTypeIconStatus';
-import CallTaxiModal from '../CallTaxiModal';
+import CallTaxiModal from './components/CallTaxiModal';
 import SearchBar from '../SearchBar';
 import SearchMap from '../SearchMap';
 import MenuSlide from '../MenuSlide';
+import { useShareId, useProfile, useUserId } from '../../../../StoreData';
 
 
 const OwnerStatus = (props) => {
-    const [share, setShare] = useState(null);
     const [map, setMap] = useState(null);
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openCallTaxi, setOpenCallTaxi] = useState(false)
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
     const [openModelExitShare, setOpenModelExitShare] = useState(false)
+    const {shareId} = useShareId(props.db,props.auth);
+    const {profile} = useProfile(props.db,props.auth);
+    const {userId} = useUserId(props.db,props.auth);
 
 
 
@@ -105,12 +108,9 @@ const OwnerStatus = (props) => {
                             }]
                         }}
                     opts={(google, map) => {
-                        const me = this
-                        get.share.id(props.status.owner.uid).then((data) => {
-                            setShare(data)
-                        })
+                        // const me = this
 
-                        get.users.profile(props.status.owner.uid).then(function (profile) {
+                        // get.users.profile(props.status.owner.uid).then(function (profile) {
 
                             function CustomMarker(latlng, map, args, img) {
                                 this.latlng = latlng;
@@ -178,7 +178,7 @@ const OwnerStatus = (props) => {
 
                                 var me = this
 
-                                if (data.share === true) {
+                                if (data === true) {
                                     me.setupPlaceChangedListener(data.geocoded_waypoints[0].place_id, 'ORIG');
                                     me.setupPlaceChangedListener(data.geocoded_waypoints[1].place_id, 'DEST');
                                     me.setupClickListener(data.request.travelMode);
@@ -243,8 +243,8 @@ const OwnerStatus = (props) => {
                             };
 
 
-                            get.users.location(props.status.owner.uid).then((location) => {
-                                let myLatlng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+                            // get.users.location(props.status.owner.uid).then((location) => {
+                                let myLatlng = new google.maps.LatLng(userId.location.coords.latitude, userId.location.coords.longitude);
 
                                 let marker1 = new CustomMarker(
                                     myLatlng,
@@ -254,8 +254,8 @@ const OwnerStatus = (props) => {
                                 );
 
                                 let pos = {
-                                    lat: location.coords.latitude,
-                                    lng: location.coords.longitude
+                                    lat: userId.location.coords.latitude,
+                                    lng: userId.location.coords.longitude
                                 };
 
                                 marker1.latlng = { lat: pos.lat, lng: pos.lng };
@@ -263,12 +263,12 @@ const OwnerStatus = (props) => {
 
                                 map.setCenter(pos);
 
-                            })
+                            // })
 
-                            get.share.location(props.status.owner.share_id).then(function (data) {
-                                new AutocompleteDirectionsHandler(google, map, data);
-                            })
-                        })
+                            // get.share.location(props.status.owner.share_id).then(function (data) {
+                                new AutocompleteDirectionsHandler(google, map, shareId.location);
+                            // })
+                        // })
                     }}
                 >
                     <SearchBar >
@@ -280,7 +280,7 @@ const OwnerStatus = (props) => {
                         />
                     </SearchBar>
 
-                    <MemberTypeIconStatus share={share} {...props} />
+                    <MemberTypeIconStatus share={shareId} {...props} />
 
                     <Grid container style={{
                         width: 'min-content',
@@ -323,14 +323,14 @@ const OwnerStatus = (props) => {
                         </Button>
                         </Fragment>)}
                     <ModelExitShare
-                        uid={props.uid}
+                        uid={props.auth.uid}
                         share_id={props.status.owner.uid}
-                        share={share}
+                        share={shareId}
                         open={openModelExitShare}
                         onClose={offModelExitShare} />
                 </Map>
                 <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} />
-                <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.uid} />
+                <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.auth.uid} />
             </StyleBaseLine>
         </Fragment>
     )

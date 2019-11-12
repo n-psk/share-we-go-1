@@ -15,25 +15,29 @@ import { StyleBaseLine } from '../../../../components/StyleBaseLine';
 // import { CustomMarker } from '../../../../components/CustomMarker';
 // import { AutocompleteDirectionsHandler } from '../../../../components/AutocompleteDirectionsHandler';
 
-import { get } from '../../../../RESTful_API'
+// import { get } from '../../../../RESTful_API'
 import ChatSlide from '../ChatSlide';
 import MemberTypeIconStatus from '../MemberModalTypeIconStatus';
-import KeyDataTaxiCar from '../KeyDataTaxiCar';
+import KeyDataTaxiCar from './components/KeyDataTaxiCar';
 import SearchBar from '../SearchBar';
 import SearchMap from '../SearchMap';
 import MenuSlide from '../MenuSlide';
 import ModelExitShare from './components/ModelExitShare';
+import { useShareId, useProfile, useUserId } from '../../../../StoreData';
 
 
 const MemberStatus = (props) => {
 
-    const [share, setShare] = useState(null);
+    // const [share, setShare] = useState(null);
     const [openChatSlide, setOpenChatSlide] = useState(false);
     const [openKeyDataTaxiCar, setOpenKeyDataTaxiCar] = useState(false);
     const [openMenuSlide, setOpenMenuSlide] = useState(false)
     const [openModelExitShare, setOpenModelExitShare] = useState(false)
     const [alertShare, setAlertShare] = useState({})
     const [map, setMap] = useState(null);
+    // const {shareId} = useShareId(props.db,props.auth);
+    const {profile} = useProfile(props.db,props.auth);
+    const {userId} = useUserId(props.db, props.auth);
 
     const onChatSlide = () => {
         setOpenChatSlide(true)
@@ -44,21 +48,21 @@ const MemberStatus = (props) => {
     }
 
     const onKeyDataTaxiCar = () => {
-        get.status.alert(props.status.member.share_id).then((data) => {
-            if (data.value !== 'false') {
-                get.share.alert(data.share_id).then((alert_share) => {
-                    setAlertShare(alert_share)
-                })
+        // get.status.alert(props.status.member.share_id).then((data) => {
+            if (props.status.alert.value !== 'false') {
+                // get.share.alert(props.status.alert.share_id).then((alert_share) => {
+                    setAlertShare(props.share.alert)
+                // })
             } else {
                 setAlertShare({
-                    uid: `${data.uid}`,
-                    share_id: `${data.share_id}`,
+                    uid: `${props.status.alert.uid}`,
+                    share_id: `${props.status.alert.share_id}`,
                     select: 'กำลังรอข้อมูล',
                     license_plate: 'กำลังรอข้อมูล'
 
                 })
             }
-        })
+        // })
         setOpenKeyDataTaxiCar(true)
     }
 
@@ -112,11 +116,11 @@ const MemberStatus = (props) => {
                             }]
                         }}
                     opts={(google, map) => {
-                        const me = this
-                        get.share.id(props.status.member.share_id).then((data) => {
-                            setShare(data)
-                        })
-                        get.users.profile(props.status.member.uid).then(function (profile) {
+                        // const me = this
+                        // get.share.id(props.status.member.share_id).then((data) => {
+                        //     setShare(data)
+                        // })
+                        // get.users.profile(props.status.member.uid).then(function (profile) {
 
                             function CustomMarker(latlng, map, args, img) {
                                 this.latlng = latlng;
@@ -249,8 +253,8 @@ const MemberStatus = (props) => {
                             };
 
 
-                            get.users.location(props.status.member.uid).then((location) => {
-                                let myLatlng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+                            // get.users.location(props.status.member.uid).then((location) => {
+                                let myLatlng = new google.maps.LatLng(userId.location.coords.latitude, userId.location.coords.longitude);
 
                                 let marker1 = new CustomMarker(
                                     myLatlng,
@@ -260,8 +264,8 @@ const MemberStatus = (props) => {
                                 );
 
                                 let pos = {
-                                    lat: location.coords.latitude,
-                                    lng: location.coords.longitude
+                                    lat: userId.location.coords.latitude,
+                                    lng: userId.location.coords.longitude
                                 };
 
                                 marker1.latlng = { lat: pos.lat, lng: pos.lng };
@@ -269,12 +273,12 @@ const MemberStatus = (props) => {
 
                                 map.setCenter(pos);
 
-                            })
+                            // })
 
-                            get.share.location(props.status.member.share_id).then(function (data) {
-                                new AutocompleteDirectionsHandler(google, map, data);
-                            })
-                        })
+                            // get.share.location(props.status.member.share_id).then(function (data) {
+                                new AutocompleteDirectionsHandler(google, map, props.share.location);
+                            // })
+                        // })
                     }}
                 >
                     <SearchBar >
@@ -285,7 +289,7 @@ const MemberStatus = (props) => {
 
                         />
                     </SearchBar>
-                    <MemberTypeIconStatus share={share} {...props} />
+                    <MemberTypeIconStatus share={props.share} {...props} />
 
                     <Grid container style={{
                         width: 'min-content',
@@ -306,15 +310,15 @@ const MemberStatus = (props) => {
                         ออกจากกลุ่ม
                         </Button>
                     <ModelExitShare
-                        uid={props.uid}
+                        uid={props.auth.uid}
                         share_id={props.status.member.share_id}
-                        share={share}
+                        share={props.share}
                         open={openModelExitShare}
                         onClose={offModelExitShare} />
 
                 </Map>
-                <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} share={share} />
-                <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.uid} />
+                <ChatSlide open={openChatSlide} onClose={offChatSlide} {...props} share={props.share} />
+                <MenuSlide open={openMenuSlide} onClose={offMenuSlide} uid={props.auth.uid} />
             </StyleBaseLine>
         </Fragment>
     )

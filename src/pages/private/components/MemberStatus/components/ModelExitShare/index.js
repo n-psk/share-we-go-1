@@ -8,8 +8,8 @@ import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
-import { post, d } from '../../../../../../RESTful_API'
-import { dateTime } from '../../../../../../module';
+// import { post, d } from '../../../../../../RESTful_API'
+// import { dateTime } from '../../../../../../module';
 
 const useStyles = makeStyles(theme => ({
     modal: {
@@ -29,13 +29,26 @@ const ModelExitShare = (props) => {
     const classes = useStyles();
 
     const removeShare = () => {
-        post.history.id(props.uid,props.share,dateTime);
+        let path_history = `history/${props.auth.uid}`;
+        let path_status_member = `status/${props.auth.uid}/member`;
+        let path_share_member = `share/${props.share_id}/member/${props.auth.uid}`
 
-        d.share.member(props.share_id, props.uid, dateTime);
 
-        // setTimeout(() => {
-        //     props.history.goBack()
-        // }, 3500)
+        let data_status_member = {
+            uid: `${props.auth.uid}`,
+            share_id: `${props.share_id}`,
+            value: 'false'
+        }
+
+        // post.history.id(props.auth.uid, props.share, dateTime);
+
+        props.db.database().ref(`${path_history}`).push(props.share)
+
+
+        props.db.database().ref(`${path_status_member}`).update(data_status_member)
+
+        props.db.database().ref(`${path_share_member}`).delete()
+
 
     }
     return (

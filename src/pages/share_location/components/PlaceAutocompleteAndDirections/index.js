@@ -1,8 +1,8 @@
 import React from 'react';
 import ConnectApiMaps, { Map } from 'maps-google-react';
-import { post } from '../../../../RESTful_API';
+// import { post } from '../../../../RESTful_API';
 import { dateTime } from '../../../../module';
-import firebase from '../../../../connect/firebase';
+// import firebase from '../../../../connect/firebase';
 import './styles/place-autocomplete-and-directions.css';
 
 
@@ -119,9 +119,18 @@ function PlaceAutocompleteAndDirections(props) {
                     me.directionsRenderer.setDirections(response);
                     console.log(response);
                     // socket.emit('origin_destination_route', response)
-                    firebase.auth().onAuthStateChanged((user) => {
-                        post.share.location(user.uid, response, dateTime)
+                    let path = `share/${props.auth.uid}/location`;
+                    let _log = `share/${props.auth.uid}/location/_log`;
+
+                    props.db.database().ref(`${path}`).update(response)
+                    props.db.database().ref(`${_log}`).push({
+                        location: response,
+                        date: dateTime
                     })
+
+                    // firebase.auth().onAuthStateChanged((user) => {
+                    //     post.share.location(user.uid, response, dateTime)
+                    // })
 
                     console.log(response);
 
@@ -179,8 +188,8 @@ function PlaceAutocompleteAndDirections(props) {
                 //    setMap(map)
                 console.log();
 
-                
-                
+
+
                 new AutocompleteDirectionsHandler(google, map);
             }}
         >

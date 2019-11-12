@@ -23,9 +23,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { get } from '../../../../RESTful_API';
-import firebase from '../../../../connect/firebase';
+// import { get } from '../../../../RESTful_API';
+// import firebase from '../../../../connect/firebase';
 import { Loading } from './components/Loading';
+import { useProfile } from '../../../../StoreData';
 
 
 // style
@@ -56,11 +57,11 @@ function MenuSlide(props) {
 
     const theme = useTheme();
     const classes = useStyles();
-
-    const [profile, setProfile] = useState(null)
+    const { profile } = useProfile(props.db, props.auth)
+    // const [profile, setProfile] = useState(null)
 
     function Logout() {
-        firebase.auth().signOut().then(function () {
+        props.db.auth().signOut().then(function () {
             // Sign-out successful.
             window.location.reload()
         }).catch(function (error) {
@@ -68,11 +69,11 @@ function MenuSlide(props) {
         });
     }
     // firebase.auth().onAuthStateChanged((user) => {
-    get.users.profile(props.uid).then((data) => {
-        setProfile(data)
+    // get.users.profile(props.uid).then((data) => {
+        // setProfile(profile)
         // console.log(data);
 
-    })
+    // })
     // })
 
 

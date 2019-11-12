@@ -11,8 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 // import Personalform from "../components/personalInformation";
 import Button from '@material-ui/core/Button';
 import { Link, withRouter } from "react-router-dom";
-import firebase from "../../connect/firebase";
-import { post } from '../../RESTful_API';
+// import firebase from "../../connect/firebase";
+// import { post } from '../../RESTful_API';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Paper from '@material-ui/core/Paper';
@@ -42,11 +42,6 @@ class DocTaxi extends React.Component {
     }
 
 
-
-    goBack() {
-        // Router.back()
-    }
-
     onEdit() {
 
         this.setState({ statusEdit: false })
@@ -60,23 +55,38 @@ class DocTaxi extends React.Component {
 
     onSend() {
 
+        let path = `share/${this.props.auth.uid}/alert`;
+        let _log = `share/${this.props.auth.uid}/alert/_log`;
+        let path_status = `status/${this.props.auth.uid}/alert`;
+        let _log_status = `status/${this.props.auth.uid}/alert/_log`;
 
-        firebase.auth().onAuthStateChanged((user) => {
 
-            post.share.alert(user.uid, {
-                uid: `${user.uid}`,
-                sahre_id: `${user.uid}`,
-                select: `${this.state.select}`,
-                license_plate: `${this.state.license_plate}`
+        let data = {
+            uid: `${this.props.auth.uid}`,
+            sahre_id: `${this.props.auth.uid}`,
+            select: `${this.state.select}`,
+            license_plate: `${this.state.license_plate}`
 
-            }, dateTime)
+        }
 
-            post.status.alert(user.uid, {
-                uid: `${user.uid}`,
-                share_id: `${user.uid}`,
-                value: 'true'
-            }, dateTime)
+        let data_status = {
+            uid: `${this.props.auth.uid}`,
+            share_id: `${this.props.auth.uid}`,
+            value: 'true'
+        }
+
+        this.props.db.database().ref(`${path}`).update(data)
+        this.props.db.database().ref(`${_log}`).update({
+            alert: data,
+            date: dateTime
         })
+
+        this.props.db.database().ref(`${path_status}`).update(data_status)
+        this.props.db.database().ref(`${_log_status}`).update({
+            alert: data_status,
+            date: dateTime
+        })
+
     }
 
     componentDidMount() {

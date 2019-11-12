@@ -14,14 +14,15 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import firebase from '../../connect/firebase';
+// import firebase from '../../connect/firebase';
 // import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 // import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import CommuteIcon from '@material-ui/icons/Commute';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 // import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import WcIcon from '@material-ui/icons/Wc';
-import { get } from '../../RESTful_API'
+// import { get } from '../../RESTful_API'
+import { useHistoryId } from '../../StoreData';
 
 
 
@@ -53,22 +54,23 @@ class History extends React.Component {
     }
 
     componentDidMount() {
-        firebase.auth().onAuthStateChanged((user) => {
-            const me = this;
-            if (user) {
-                firebase.database().ref(`history/${user.uid}`).once("value").then(function (snapshot) {
-                    let data = (snapshot.val())
-                    me.setState({ history: data })
-                })
-                // get.history.id(user.uid).then((data) => {
-                //     console.log(data);
+        const { historyId } = useHistoryId(this.props.db, this.props.auth)
+        // firebase.auth().onAuthStateChanged((user) => {
+        //     const me = this;
+        //     if (user) {
+        //         firebase.database().ref(`history/${user.uid}`).once("value").then(function (snapshot) {
+        //             let data = (snapshot.val())
+        this.setState({ history: historyId })
+        // })
+        // get.history.id(user.uid).then((data) => {
+        //     console.log(data);
 
-                //     if (data !== null) {
-                //         me.setState({ history: data })
-                //     }
-                // })
-            }
-        })
+        //     if (data !== null) {
+        //         me.setState({ history: data })
+        //     }
+        // })
+        // }
+        // })
 
     }
 

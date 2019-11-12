@@ -4,9 +4,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 // import FormHelperText from '@material-ui/core/FormHelperText';
 // import io from 'socket.io-client';
-import { post } from '../../../../RESTful_API';
+// import { post } from '../../../../RESTful_API';
 import { dateTime } from '../../../../module';
-import firebase from '../../../../connect/firebase'
+// import firebase from '../../../../connect/firebase'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function RadioButtonsGroup() {
+export default function RadioButtonsGroup(props) {
     const classes = useStyles();
     const [value, setValue] = React.useState('1');
 
@@ -34,9 +34,14 @@ export default function RadioButtonsGroup() {
         setValue(event.target.value);
     }
 
-    firebase.auth().onAuthStateChanged((user) => {
-        post.share.max_number(user.uid, { value: value }, dateTime)
-    })
+    let path =`share/${props.auth.uid}/max_number`
+    let _log =`share/${props.auth.uid}/max_number/_log`
+
+    props.db.database().ref(`${path}`).update({ value: value })
+    props.db.database().ref(`${_log}`).push({max_number:{ value: value },date:dateTime})
+    // firebase.auth().onAuthStateChanged((user) => {
+    //     post.share.max_number(user.uid, { value: value }, dateTime)
+    // })
     // socket.emit('number_of_travel', { number_of_travel: value })
 
     return (

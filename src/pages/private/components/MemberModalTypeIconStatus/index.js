@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/styles';
 
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
-import { get } from '../../../../RESTful_API';
+// import { get } from '../../../../RESTful_API';
 
 
 const MemberTypeIconStatus = (props) => {

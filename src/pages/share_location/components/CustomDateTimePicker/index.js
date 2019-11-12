@@ -6,8 +6,9 @@ import DateFnsUtils from '@date-io/date-fns';
 // import SnoozeIcon from "@material-ui/icons/Snooze";
 // import AlarmIcon from "@material-ui/icons/AddAlarm";
 // import { IconButton, InputAdornment } from "@material-ui/core";
-import { post } from '../../../../RESTful_API';
-import { dateTime } from '../../../../module'; import firebase from '../../../../connect/firebase'
+// import { post } from '../../../../RESTful_API';
+import { dateTime } from '../../../../module'; 
+// import firebase from '../../../../connect/firebase'
 import {
   MuiPickersUtilsProvider,
   KeyboardDateTimePicker
@@ -54,7 +55,7 @@ const materialTheme = createMuiTheme({
   spacing: 2,
 });
 
-export default function CustomDateTimePicker() {
+export default function CustomDateTimePicker(props) {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [open, setOpen] = React.useState(true)
@@ -102,8 +103,15 @@ export default function CustomDateTimePicker() {
     }
 
     // socket.emit('boarding_time', timer)
-    firebase.auth().onAuthStateChanged((user) => {
-      post.share.date(user.uid, timer, dateTime)
+    // firebase.auth().onAuthStateChanged((user) => {
+    //   post.share.date(user.uid, timer, dateTime)
+    // })
+    let path = `share/${props.auth.uid}`;
+    let _log = `share/${props.auth.uid}/_log`;
+    props.db.database().ref(`${path}`).update(timer)
+    props.db.database().ref(`${_log}`).push({
+      data: timer,
+      date: dateTime
     })
   }
 
@@ -117,7 +125,7 @@ export default function CustomDateTimePicker() {
   return (
     <div style={{ marginTop: h }}>
       <MuiPickersUtilsProvider utils={DateFnsUtils} >
-        <Grid 
+        <Grid
           container justify="space-around">
           <ThemeProvider theme={materialTheme}>
             <KeyboardDateTimePicker
